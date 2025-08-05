@@ -424,6 +424,65 @@ Para dúvidas sobre implementação ou interesse em projetos similares:
 - 💬 **Instagram Dev**: https://www.instagram.com/dev.luanna/
 - 💬 **Instagram Pessoal**: https://www.instagram.com/luannabahia_
 
+## 🤝 Como Colaborar com o Projeto
+
+### **📍 Repositório GitHub**
+O projeto está disponível no GitHub para fins educacionais e colaboração:
+
+🔗 **Link do repositório**: `https://github.com/luannabahia/sistema-empresa`
+
+### **🎯 Formas de Contribuir**
+
+#### **🐛 Reportar Bugs**
+- Abra uma **Issue** descrevendo o problema encontrado
+- Inclua prints e informações do ambiente (navegador, OS)
+- Detalhe os passos para reproduzir o bug
+
+#### **💡 Sugerir Melhorias**
+- Use as **Issues** para propor novas funcionalidades
+- Compartilhe ideias de otimização de performance
+- Sugira melhorias na experiência do usuário
+
+#### **🔧 Contribuir com Código**
+- Faça um **Fork** do repositório
+- Crie uma **branch** para sua feature: `git checkout -b feature/nova-funcionalidade`
+- Commit suas mudanças: `git commit -m 'Add: nova funcionalidade'`
+- Push para a branch: `git push origin feature/nova-funcionalidade`
+- Abra um **Pull Request** com descrição detalhada
+
+#### **📚 Melhorar Documentação**
+- Contribua com a documentação do código
+- Traduza README para outros idiomas
+- Adicione exemplos de uso e tutoriais
+
+### **🏷️ Convenções do Projeto**
+
+#### **📝 Commits Semânticos**
+```
+feat: nova funcionalidade
+fix: correção de bug
+docs: alteração na documentação
+style: formatação, ponto e vírgula faltando, etc
+refactor: refatoração de código
+test: adicionando testes
+chore: alteração de build, etc
+```
+
+#### **🌿 Branches**
+- `main` - Produção estável
+- `develop` - Desenvolvimento ativo
+- `feature/nome-da-feature` - Novas funcionalidades
+- `hotfix/nome-do-fix` - Correções urgentes
+
+### **⚠️ Importante**
+- Este é um projeto **freelancer** com direitos reservados ao cliente
+- Contribuições são para **fins educacionais**
+- Não use dados reais nos exemplos ou testes
+- Respeite as **boas práticas** de desenvolvimento
+
+### **🎁 Reconhecimento**
+Todos os colaboradores serão creditados no arquivo `CONTRIBUTORS.md` e receberão menção especial nas releases!
+
 ### **Serviços Oferecidos**
 - 🏗️ Desenvolvimento de sistemas web personalizados
 - 📱 Aplicações responsivas e mobile-first
