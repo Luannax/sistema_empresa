@@ -72,16 +72,48 @@ O sistema foi desenvolvido com foco em responsividade, garantindo uma experiênc
 - Tabelas compactas com informações essenciais
 - Menu colapsável para economia de espaço
 
-> **📸 Capturas de tela da responsividade:**
+> **📸 Galeria de Responsividade do Sistema:**
 > 
-> **Desktop:**
-> ![Desktop Screenshot](img/screenshots/desktop-view.png)
+> <div align="center">
 > 
-> **Tablet:**
-> ![Tablet Screenshot](img/screenshots/tablet-view.png)
+> ### 🔐 **Página de Login**
+> | Geral | Desktop | Tablet | Mobile |
+> |:-------:|:------:|:------:|:------:|
+> | ![Login Geral](img/responsividade/login/principal.png) | ![Login Desktop](img/responsividade/login/desktop.png) | ![Login Tablet](img/responsividade/login/tablet.png) | ![Login Mobile](img/responsividade/login/mobile.png) |
 > 
-> **Mobile:**
-> ![Mobile Screenshot](img/screenshots/mobile-view.png)
+> ### 📊 **Dashboard Principal**
+> | Geral | Desktop | Tablet | Mobile |
+> |:-------:|:------:|:------:|:------:|
+> | ![Login Geral](img/responsividade/dashboard/principal.png) | ![Login Desktop](img/responsividade/dashboard/desktop.png) | ![Login Tablet](img/responsividade/dashboard/tablet.png) | ![Login Mobile](img/responsividade/dashboard/mobile.png) |
+> 
+> ### 👥 **Gestão de Clientes**
+> | Geral | Desktop | Tablet | Mobile |
+> |:-------:|:------:|:------:|:------:|
+> | ![Login Geral](img/responsividade/cliente/principal.png) | ![Login Desktop](img/responsividade/cliente/desktop.png) | ![Login Tablet](img/responsividade/cliente/tablet.png) | ![Login Mobile](img/responsividade/cliente/mobile.png) |
+> 
+> ### 📋 **Gestão de Pedidos**
+> | Geral | Desktop | Tablet | Mobile |
+> |:-------:|:------:|:------:|:------:|
+> | ![Login Geral](img/responsividade/pedido/principal.png) | ![Login Desktop](img/responsividade/pedido/desktop.png) | ![Login Tablet](img/responsividade/pedido/tablet.png) | ![Login Mobile](img/responsividade/pedido/mobile.png) |
+> 
+> ### 🏭 **Gestão de Fornecedores**
+> | Geral | Desktop | Tablet | Mobile |
+> |:-------:|:------:|:------:|:------:|
+> | ![Login Geral](img/responsividade/fornecedores/principal.png) | ![Login Desktop](img/responsividade/fornecedores/desktop.png) | ![Login Tablet](img/responsividade/fornecedores/tablet.png) | ![Login Mobile](img/responsividade/fornecedores/mobile.png) |
+> 
+> ### 👤 **Gestão de Usuários**
+> | Geral | Desktop | Tablet | Mobile |
+> |:-------:|:------:|:------:|:------:|
+> | ![Login Geral](img/responsividade/usuarios/principal.png) | ![Login Desktop](img/responsividade/usuarios/desktop.png) | ![Login Tablet](img/responsividade/usuarios/tablet.png) | ![Login Mobile](img/responsividade/usuarios/mobile.png) |
+> 
+> ### 📊 **Relatórios e Analytics**
+> | Geral | Desktop | Tablet | Mobile |
+> |:-------:|:------:|:------:|:------:|
+> | ![Login Geral](img/responsividade/relatorio/principal.png) | ![Login Desktop](img/responsividade/relatorio/desktop.png) | ![Login Tablet](img/responsividade/relatorio/tablet.png) | ![Login Mobile](img/responsividade/relatorio/mobile.png) |
+> 
+> </div>
+> 
+> > 💡 **Visualização Comparativa**: Cada linha mostra como a mesma página se adapta perfeitamente a diferentes tamanhos de tela, mantendo funcionalidade e usabilidade em todos os dispositivos.
 
 ## 🛠️ Tecnologias Utilizadas
 
@@ -113,7 +145,7 @@ O sistema foi desenvolvido com foco em responsividade, garantindo uma experiênc
 
 ### **1️⃣ Clone o Repositório**
 ```bash
-git clone https://github.com/Luannax/sistema_empresa.git
+git clone https://github.com/seu-usuario/sistema.git
 cd sistema
 ```
 
@@ -142,32 +174,48 @@ Abra o arquivo `index.html` em um servidor local ou hospede em uma plataforma co
 ## 📊 Estrutura do Projeto
 
 ```
-sistema/
+sistema_empresa/
 ├── 📁 css/
 │   ├── navbar.css
 │   └── fornecedores-status.css
 ├── 📁 js/
 │   ├── auth-manager.js
-│   ├── database.js
+│   ├── backup.js
 │   ├── clientes.js
-│   ├── pedido.js
+│   ├── component-loader.js
+│   ├── controle-acesso.js
+│   ├── dashboard.js
+│   ├── database.js
+│   ├── devtools-protection.js
+│   ├── environment-config.js
 │   ├── fornecedores.js
-│   └── relatorio.js
+│   ├── funcoes.js
+│   ├── login.js
+│   ├── pedido.js
+│   ├── relatorio.js
+│   ├── security.js
+│   └── usuarios.js
+├── 📁 node_modules/
 ├── 📁 pages/
-│   ├── dashboard.html
 │   ├── clientes.html
+│   ├── dashboard.html
+│   ├── forncedores.html
 │   ├── pedido.html
-│   ├── fornecedores.html
-│   └── relatorio.html
+│   ├── relatorio.html
+│   └── usuarios.html
 ├── 📁 components/
 │   └── navbar.html
 ├── 📁 database/
-│   ├── schema.sql
-│   └── migration_scripts/
+│   └── schema.sql
 ├── 📁 img/
-│   ├── assets/
-│   └── screenshots/
-└── index.html
+│   ├── fundologin.jpg
+│   ├── logo.png
+│   └── responsividade/
+├── index.html
+├── LICENSE
+├── package-lock.json
+├── package.json
+└── README.md
 ```
 
 ## 🎯 Estrutura do Banco de Dados
@@ -302,6 +350,50 @@ Este sistema foi desenvolvido como projeto freelancer, focando em:
 - 🎨 **Componentes**: 12
 - 🔧 **Funções**: 80+
 
+## 🚀 Roadmap e Atualizações Futuras
+
+### **📅 Próximas Atualizações Planejadas**
+
+O sistema está em constante evolução! Futuras versões incluirão modernizações tecnológicas significativas:
+
+### **⚛️ Migração para React.js**
+- 🔄 **Refatoração completa** do frontend para React
+- 📦 **Componentização avançada** com hooks e context
+- ⚡ **Performance otimizada** com Virtual DOM
+- 🎯 **TypeScript** para maior robustez e produtividade
+- 🧪 **Testes automatizados** com Jest e React Testing Library
+
+### **🛠️ Stack Tecnológico Futuro**
+**Frontend Moderno:**
+- ⚛️ **React 18+** - Framework principal
+- 📘 **TypeScript** - Tipagem estática
+- 🎨 **Styled Components** ou **Tailwind CSS** - Estilização moderna
+- 📊 **React Query** - Gerenciamento de estado servidor
+- 🔥 **Vite** - Build tool ultrarrápido
+
+**Backend Evoluído:**
+- 🟢 **Node.js + Express** - API REST robusta
+- 🗃️ **Prisma ORM** - Modelagem de dados moderna
+- 🔐 **JWT + Refresh Tokens** - Autenticação avançada
+- 📝 **Swagger/OpenAPI** - Documentação automática
+- 🧪 **Testes de integração** com Supertest
+
+### **📱 Funcionalidades Futuras**
+- 📊 **Dashboard em tempo real** com WebSockets
+- 📱 **PWA** (Progressive Web App) para instalação mobile
+- 🔔 **Notificações push** para atualizações importantes
+- 📈 **Analytics avançado** com gráficos interativos
+- 🌐 **API pública** para integrações externas
+- 🤖 **Automações inteligentes** com IA
+
+### **🎯 Cronograma de Migração**
+- **Q2 2025**: Início da refatoração para React
+- **Q3 2025**: Implementação do backend Node.js
+- **Q4 2025**: Lançamento da versão 2.0
+- **Q1 2026**: Funcionalidades avançadas e PWA
+
+> 💡 **Por que React?** A migração para React proporcionará melhor manutenibilidade, performance superior, ecossistema mais robusto e facilidade para implementar funcionalidades complexas como real-time updates e interfaces mais dinâmicas.
+
 ## 🚀 Hospedagem e Deploy
 
 ### **Recomendações de Hospedagem**
@@ -326,10 +418,11 @@ Este sistema foi desenvolvido como projeto freelancer, focando em:
 
 Para dúvidas sobre implementação ou interesse em projetos similares:
 
-- 💼 **LinkedIn**: [Seu LinkedIn]
-- 📧 **Email**: [seu-email@example.com]
-- 🌐 **Portfolio**: [Seu Portfolio]
-- 💬 **WhatsApp**: [Seu WhatsApp Business]
+- 💼 **LinkedIn**: https://www.linkedin.com/in/luannabahia/
+- 📧 **Email**: luanna.dev@gmail.com
+- 🌐 **Portfolio**: https://portfolio-luanna.vercel.app/
+- 💬 **Instagram Dev**: https://www.instagram.com/dev.luanna/
+- 💬 **Instagram Pessoal**: https://www.instagram.com/luannabahia_
 
 ### **Serviços Oferecidos**
 - 🏗️ Desenvolvimento de sistemas web personalizados
