@@ -113,7 +113,7 @@ O sistema foi desenvolvido com foco em responsividade, garantindo uma experiênc
 
 ### **1️⃣ Clone o Repositório**
 ```bash
-git clone https://github.com/seu-usuario/sistema.git
+git clone https://github.com/Luannax/sistema_empresa.git
 cd sistema
 ```
 
