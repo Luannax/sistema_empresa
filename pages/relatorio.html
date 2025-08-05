@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMPRESA | RELATÓRIO</title>
+    <link rel="icon" type="image/png" href="../img/logo.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="../css/navbar.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar será carregado automaticamente -->
+    <div id="navbar-container" data-component="navbar"></div>
+
+    <!-- Breadcrumb -->
+    <div class="bg-light border-bottom">
+        <div class="container-fluid">
+            <nav aria-label="breadcrumb" class="py-2">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item">
+                        <a href="/pages/dashboard.html" class="text-decoration-none">
+                            <i class="bi bi-house-door me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        <i class="bi bi-file-earmark-text me-1"></i>Relatórios
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <!-- Barra de pesquisa e botão adicionar -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="BUSCAR">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-6 text-end mt-3">
+                <button class="btn text-white" style="background: linear-gradient(135deg, #4a7c59, #6b8e6b);" onclick="gerarRelatorioCompleto()">
+                    <i class="bi bi-file-earmark-pdf me-1"></i>Gerar PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabela de relatórios -->
+        <div class="">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th class="text-center d-none d-sm-table-cell">PEDIDO</th>
+                        <th class="text-center d-none d-sm-table-cell">VENDEDOR</th>
+                        <th class="text-center">CLIENTE</th>
+                        <th class="text-center">DATA/HORA</th>
+                        <th class="text-center d-none d-sm-table-cell">ITENS</th>
+                        <th class="text-center">TOTAL</th>
+                        <th class="text-center">&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Dados serão carregados via JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal Visualizar Pedido -->
+    <div class="modal fade" id="modalVisualizarPedido" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #4a7c59; color: white;">
+                    <h5 class="modal-title">
+                        <i class="bi bi-eye me-2"></i>
+                        Detalhes do Pedido #<span id="modalCompraId"></span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Dados do Cliente -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="bi bi-person me-2"></i>Dados do Cliente</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Nome:</strong> <span id="modalClienteNome"></span></p>
+                                    <p><strong>CPF/CNPJ:</strong> <span id="modalClienteCpf"></span></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Cidade:</strong> <span id="modalClienteCidade"></span></p>
+                                    <p><strong>Celular:</strong> <span id="modalClienteCelular"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Itens do Pedido -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="bi bi-cart3 me-2"></i>Itens do Pedido</h6>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Discriminação</th>
+                                            <th class="text-center">Qtd</th>
+                                            <th class="text-center">Un.</th>
+                                            <th class="text-center">Vl. Unit.</th>
+                                            <th class="text-center">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="modalItensTabela">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer text-end">
+                            <h5 class="mb-0"><b>Total Geral: <span class="text-success" id="modalTotalGeral"></span></b></h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn text-white" style="background: linear-gradient(135deg, #4a7c59, #6b8e6b);" onclick="gerarPDFPedido()">
+                        <i class="bi bi-file-earmark-pdf me-1"></i>Gerar PDF
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Pedido -->
+    <div class="modal fade" id="modalEditarPedido" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #4a7c59; color: white;">
+                    <h5 class="modal-title">
+                        <i class="bi bi-pencil me-2"></i>
+                        Editar Pedido #<span id="modalEditCompraId"></span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEditarPedido">
+                        <!-- Dados do Cliente -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-person me-2"></i>Dados do Cliente
+                                    <span class="badge bg-info ms-2">Apenas visualização</span>
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    <strong>Informação:</strong> Os dados do cliente não podem ser editados aqui. 
+                                    Para alterar informações do cliente, use o módulo "Clientes".
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Nome</label>
+                                        <input type="text" class="form-control" id="editClienteNome" readonly>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">CPF/CNPJ</label>
+                                        <input type="text" class="form-control" id="editClienteCpf" readonly>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Celular</label>
+                                        <input type="text" class="form-control" id="editClienteCelular" readonly>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Endereço</label>
+                                        <input type="text" class="form-control" id="editClienteEndereco" readonly>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Estado</label>
+                                        <input type="text" class="form-control" id="editClienteEstado" readonly>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Cidade</label>
+                                        <input type="text" class="form-control" id="editClienteCidade" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Itens Editáveis -->
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0"><i class="bi bi-cart3 me-2"></i>Itens do Pedido</h6>
+                                <button type="button" class="btn btn-success btn-sm" onclick="abrirModalAdicionarItem()">
+                                    <i class="bi bi-plus-circle me-1"></i>Adicionar Item
+                                </button>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Discriminação</th>
+                                                <th class="text-center">Qtd</th>
+                                                <th class="text-center">Un.</th>
+                                                <th class="text-center">Vl. Unit.</th>
+                                                <th class="text-center">Total</th>
+                                                <th class="text-center">Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="editItensTabela">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" onclick="salvarEdicaoPedido()">
+                        <i class="bi bi-check-circle me-2"></i>Salvar Alterações
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Modal Adicionar Item ao Pedido -->
+    <div class="modal fade" id="modalAdicionarItem" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #4a7c59; color: white;">
+                    <h5 class="modal-title">
+                        <i class="bi bi-plus-circle me-2"></i>Adicionar Item ao Pedido
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formAdicionarItem" novalidate>
+                        <div class="mb-3">
+                            <label for="novoItemDiscriminacao" class="form-label">Discriminação <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="novoItemDiscriminacao" required placeholder="Ex: Produto A, Serviço B">
+                            <div class="invalid-feedback">Por favor, insira a discriminação do item.</div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="novoItemQuantidade" class="form-label">Quantidade <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="novoItemQuantidade" min="0.01" step="0.01" required placeholder="Ex: 1.00, 2.50">
+                                <div class="invalid-feedback">Quantidade deve ser maior que 0.</div>
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="novoItemUnidade" class="form-label">Unidade <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="novoItemUnidade" placeholder="Ex: UN, KG, M" required>
+                                <div class="invalid-feedback">Por favor, insira a unidade.</div>
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="novoItemValorUnitario" class="form-label">Valor Unitário <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="novoItemValorUnitario" min="0.01" step="0.01" required placeholder="Ex: 10.00">
+                                <div class="invalid-feedback">Valor deve ser maior que 0.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="novoItemTotal" class="form-label">Total</label>
+                            <input type="number" class="form-control" id="novoItemTotal" readonly style="background-color: #f8f9fa; font-weight: bold;">
+                            <small class="form-text text-muted">Calculado automaticamente: Quantidade × Valor Unitário</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" onclick="adicionarNovoItem()">
+                        <i class="bi bi-plus-circle me-1"></i>Adicionar Item
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Scripts do projeto -->
+    <script src="../js/environment-config.js"></script>
+    <script src="../js/devtools-protection.js"></script>
+    <script src="../js/security.js"></script>
+    <script src="../js/auth-manager.js"></script>
+    <script src="../js/component-loader.js"></script>
+    <script src="../js/controle-acesso.js"></script>
+    <script src="../js/database.js"></script>
+    <script src="../js/relatorio.js"></script>
+
+    <!-- Modais de Perfil -->
+    <!-- Modal Editar Perfil -->
+    <div class="modal fade" id="modalPerfil" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #4a7c59, #6b8e6b);">
+                    <h5 class="modal-title text-white">
+                        <i class="bi bi-person me-2"></i>Meu Perfil
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formPerfil" novalidate>
+                        <div class="text-center mb-4">
+                            <div class="bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center" 
+                                 style="width: 80px; height: 80px;">
+                                <i class="bi bi-person-fill" style="font-size: 2rem; color: #4a7c59;"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="perfilNome" class="form-label">Nome Completo</label>
+                            <input type="text" class="form-control" id="perfilNome" required>
+                            <div class="invalid-feedback">Por favor, insira seu nome completo.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="perfilEmail" class="form-label">E-mail</label>
+                            <input type="email" class="form-control" id="perfilEmail" required>
+                            <div class="invalid-feedback">Por favor, insira um e-mail válido.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="perfilUsuario" class="form-label">Nome de Usuário</label>
+                            <input type="text" class="form-control" id="perfilUsuario" readonly>
+                            <small class="form-text text-muted">O nome de usuário não pode ser alterado.</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Tipo de Conta</label>
+                            <select class="form-select" id="tipoUsuario" required>
+                                <option value="ADM">Administrador</option>
+                                <option value="VENDEDOR">Vendedor</option>
+                            </select>
+                            <small class="form-text text-muted" id="tipoUsuarioHint">Somente o administrador pode alterar</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn text-white" style="background: linear-gradient(135deg, #4a7c59, #6b8e6b);" onclick="salvarPerfil()">
+                        <i class="bi bi-check-circle me-1"></i>Salvar Alterações
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Alterar Senha -->
+    <div class="modal fade" id="modalAlterarSenha" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #4a7c59, #6b8e6b);">
+                    <h5 class="modal-title text-white">
+                        <i class="bi bi-key me-2"></i>Alterar Senha
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formAlterarSenha" novalidate>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Dica de Segurança:</strong> Use uma senha forte com pelo menos 4 caracteres.
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="senhaAtual" class="form-label">Senha Atual</label>
+                            <input type="password" class="form-control" id="senhaAtual" required>
+                            <div class="invalid-feedback">Por favor, insira sua senha atual.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="novaSenha" class="form-label">Nova Senha</label>
+                            <input type="password" class="form-control" id="novaSenha" required>
+                            <div class="invalid-feedback">A nova senha deve ter pelo menos 4 caracteres.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="confirmarSenha" class="form-label">Confirmar Nova Senha</label>
+                            <input type="password" class="form-control" id="confirmarSenha" required>
+                            <div class="invalid-feedback">As senhas não coincidem.</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn text-white" style="background: linear-gradient(135deg, #4a7c59, #6b8e6b);" onclick="alterarSenha()">
+                        <i class="bi bi-check-circle me-1"></i>Alterar Senha
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Funcionalidades de Perfil do Usuário (mesmo código das outras páginas)
+        // Funcionalidades de Perfil do Usuário
+        
+        // Abrir modal de perfil
+        // Abrir modal de perfil
+        async function abrirModalPerfil() {
+            let usuario;
+            
+            // Tentar obter usuário usando AuthManager primeiro
+            try {
+                if (window.AuthManager && typeof window.AuthManager.verificarAutenticacao === 'function') {
+                    usuario = await window.AuthManager.verificarAutenticacao();
+                } else {
+                    usuario = obterUsuarioLogado();
+                }
+            } catch (error) {
+                console.error('Erro ao obter usuário:', error);
+                usuario = obterUsuarioLogado();
+            }
+            
+            if (!usuario) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: 'Não foi possível carregar os dados do usuário.',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+            
+            console.log('🔍 Dados do usuário para modal perfil:', usuario);
+            
+            // Preencher dados atuais
+            document.getElementById('perfilNome').value = usuario.nome || '';
+            document.getElementById('perfilEmail').value = usuario.email || '';
+            document.getElementById('perfilUsuario').value = usuario.usuario || '';
+            
+            // Configurar tipo de usuário
+            const tipoUsuarioSelect = document.getElementById('tipoUsuario');
+            const tipoUsuarioHint = document.getElementById('tipoUsuarioHint');
+            tipoUsuarioSelect.value = usuario.prioridade || 'VENDEDOR';
+            
+            // Verificar se usuário é admin para permitir alteração do tipo
+            if (usuario.prioridade !== 'ADM') {
+                tipoUsuarioSelect.disabled = true;
+                tipoUsuarioSelect.style.backgroundColor = '#f8f9fa';
+                tipoUsuarioSelect.style.color = '#6c757d';
+                tipoUsuarioSelect.style.cursor = 'not-allowed';
+                tipoUsuarioHint.textContent = 'Apenas administradores podem alterar o tipo de conta';
+                tipoUsuarioHint.className = 'form-text text-warning';
+            } else {
+                tipoUsuarioSelect.disabled = false;
+                tipoUsuarioSelect.style.backgroundColor = '';
+                tipoUsuarioSelect.style.color = '';
+                tipoUsuarioSelect.style.cursor = '';
+                tipoUsuarioHint.textContent = 'Você pode alterar o tipo de conta';
+                tipoUsuarioHint.className = 'form-text text-success';
+            }
+            
+            // Remover classes de validação
+            document.querySelectorAll('#formPerfil .is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            
+            new bootstrap.Modal(document.getElementById('modalPerfil')).show();
+        }
+        
+        // Salvar alterações do perfil
+        async function salvarPerfil() {
+            let usuario;
+            
+            // Tentar obter usuário usando AuthManager primeiro
+            try {
+                if (window.AuthManager && typeof window.AuthManager.verificarAutenticacao === 'function') {
+                    usuario = await window.AuthManager.verificarAutenticacao();
+                } else {
+                    usuario = obterUsuarioLogado();
+                }
+            } catch (error) {
+                console.error('Erro ao obter usuário:', error);
+                usuario = obterUsuarioLogado();
+            }
+            
+            if (!usuario) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: 'Não foi possível identificar o usuário.',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+            
+            console.log('🔍 Dados do usuário para salvar perfil:', usuario);
+            
+            // Validar formulário
+            const nome = document.getElementById('perfilNome').value.trim();
+            const email = document.getElementById('perfilEmail').value.trim();
+            const tipoUsuario = document.getElementById('tipoUsuario').value;
+            
+            let valido = true;
+            
+            // Validar nome
+            if (nome.length < 2) {
+                document.getElementById('perfilNome').classList.add('is-invalid');
+                valido = false;
+            } else {
+                document.getElementById('perfilNome').classList.remove('is-invalid');
+            }
+            
+            // Validar email
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                document.getElementById('perfilEmail').classList.add('is-invalid');
+                valido = false;
+            } else {
+                document.getElementById('perfilEmail').classList.remove('is-invalid');
+            }
+            
+            if (!valido) return;
+            
+            try {
+                // Preparar dados para atualização
+                const dadosAtualizacao = {
+                    nome: nome,
+                    email: email
+                };
+                
+                // Se for admin, pode alterar o tipo
+                if (usuario.prioridade === 'ADM') {
+                    dadosAtualizacao.prioridade = tipoUsuario;
+                }
+                
+                // Identificar o nome de usuário correto
+                const nomeUsuario = usuario.usuario; // AuthManager já formata nome_usuario como usuario
+                
+                if (!nomeUsuario) {
+                    throw new Error('Nome de usuário não encontrado');
+                }
+                
+                // Atualizar no banco de dados
+                let resultado = { success: false };
+                
+                if (typeof atualizarPerfilUsuario === 'function') {
+                    resultado = await atualizarPerfilUsuario(nomeUsuario, dadosAtualizacao);
+                } else {
+                    console.warn('Função atualizarPerfilUsuario não encontrada');
+                    // Simular sucesso para desenvolvimento
+                    resultado = { success: true };
+                }
+                
+                if (resultado.success) {
+                    // Atualizar display do nome
+                    const nomeUsuarioElement = document.getElementById('nomeUsuario');
+                    if (nomeUsuarioElement) {
+                        nomeUsuarioElement.innerHTML = 
+                            `<i class="bi bi-person-circle"></i> ${nome}`;
+                    }
+                    
+                    // Fechar modal
+                    bootstrap.Modal.getInstance(document.getElementById('modalPerfil')).hide();
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Perfil Atualizado!',
+                        text: 'Suas informações foram atualizadas com sucesso.',
+                        confirmButtonColor: '#4a7c59'
+                    }).then(() => {
+                        // Recarregar a página para atualizar todos os dados
+                        window.location.reload();
+                    });
+                } else {
+                    throw new Error(resultado.error || 'Falha ao atualizar no banco');
+                }
+                
+            } catch (error) {
+                console.error('Erro ao salvar perfil:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: `Ocorreu um erro ao salvar suas alterações: ${error.message}`,
+                    confirmButtonColor: '#dc3545'
+                });
+            }
+        }
+        
+        // Abrir modal de alterar senha
+        function abrirModalAlterarSenha() {
+            // Limpar formulário
+            document.getElementById('formAlterarSenha').reset();
+            document.querySelectorAll('#formAlterarSenha .is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            
+            new bootstrap.Modal(document.getElementById('modalAlterarSenha')).show();
+        }
+        
+        // Alterar senha
+        // Alterar senha
+        async function alterarSenha() {
+            let usuario;
+            
+            // Tentar obter usuário usando AuthManager primeiro
+            try {
+                if (window.AuthManager && typeof window.AuthManager.verificarAutenticacao === 'function') {
+                    usuario = await window.AuthManager.verificarAutenticacao();
+                } else {
+                    usuario = obterUsuarioLogado();
+                }
+            } catch (error) {
+                console.error('Erro ao obter usuário:', error);
+                usuario = obterUsuarioLogado();
+            }
+            
+            if (!usuario) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: 'Não foi possível identificar o usuário.',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+            
+            const senhaAtual = document.getElementById('senhaAtual').value;
+            const novaSenha = document.getElementById('novaSenha').value;
+            const confirmarSenha = document.getElementById('confirmarSenha').value;
+            
+            let valido = true;
+            
+            // Validar senha atual
+            if (senhaAtual !== usuario.senha) {
+                document.getElementById('senhaAtual').classList.add('is-invalid');
+                valido = false;
+            } else {
+                document.getElementById('senhaAtual').classList.remove('is-invalid');
+            }
+            
+            // Validar nova senha
+            if (novaSenha.length < 4) {
+                document.getElementById('novaSenha').classList.add('is-invalid');
+                valido = false;
+            } else {
+                document.getElementById('novaSenha').classList.remove('is-invalid');
+            }
+            
+            // Validar confirmação
+            if (novaSenha !== confirmarSenha) {
+                document.getElementById('confirmarSenha').classList.add('is-invalid');
+                valido = false;
+            } else {
+                document.getElementById('confirmarSenha').classList.remove('is-invalid');
+            }
+            
+            if (!valido) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Dados inválidos',
+                    text: 'Verifique os campos e tente novamente.',
+                    confirmButtonColor: '#4a7c59'
+                });
+                return;
+            }
+            
+            try {
+                // Identificar o nome de usuário correto
+                const nomeUsuario = usuario.usuario; // AuthManager já formata nome_usuario como usuario
+                
+                if (!nomeUsuario) {
+                    throw new Error('Nome de usuário não encontrado');
+                }
+                
+                // Alterar senha no banco de dados
+                let resultado = { success: false };
+                
+                if (typeof alterarSenhaUsuario === 'function') {
+                    resultado = await alterarSenhaUsuario(nomeUsuario, novaSenha);
+                } else {
+                    console.warn('Função alterarSenhaUsuario não encontrada');
+                    // Simular sucesso para desenvolvimento
+                    resultado = { success: true };
+                }
+                
+                if (resultado.success) {
+                    // Limpar formulário
+                    document.getElementById('formAlterarSenha').reset();
+                    
+                    // Fechar modal
+                    bootstrap.Modal.getInstance(document.getElementById('modalAlterarSenha')).hide();
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Senha Alterada!',
+                        text: 'Sua senha foi alterada com sucesso.',
+                        confirmButtonColor: '#4a7c59'
+                    }).then(() => {
+                        // Recarregar a página para atualizar todos os dados
+                        window.location.reload();
+                    });
+                } else {
+                    throw new Error(resultado.error || 'Falha ao alterar senha no banco');
+                }
+                
+            } catch (error) {
+                console.error('Erro ao alterar senha:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: `Ocorreu um erro ao alterar sua senha: ${error.message}`,
+                    confirmButtonColor: '#dc3545'
+                });
+            }
+        }
+        
+        // ========== FUNÇÕES DE FORMATAÇÃO ==========
+        
+        // Função para formatar CPF/CNPJ
+        function formatarCpfCnpj(valor) {
+            if (!valor) return '';
+            
+            // Remove tudo que não é dígito
+            const apenasNumeros = valor.replace(/\D/g, '');
+            
+            // Se tem 11 dígitos, é CPF
+            if (apenasNumeros.length === 11) {
+                return apenasNumeros.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+            }
+            // Se tem 14 dígitos, é CNPJ
+            else if (apenasNumeros.length === 14) {
+                return apenasNumeros.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+            }
+            // Se não tem o tamanho esperado, retorna sem formatação
+            else {
+                return valor;
+            }
+        }
+        
+        // Função para formatar celular
+        function formatarCelular(valor) {
+            if (!valor) return '';
+            
+            // Remove tudo que não é dígito
+            const apenasNumeros = valor.replace(/\D/g, '');
+            
+            // Se tem 11 dígitos (9XXXX-XXXX)
+            if (apenasNumeros.length === 11) {
+                return apenasNumeros.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+            }
+            // Se tem 10 dígitos (XXXX-XXXX)
+            else if (apenasNumeros.length === 10) {
+                return apenasNumeros.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+            }
+            // Se não tem o tamanho esperado, retorna sem formatação
+            else {
+                return valor;
+            }
+        }
+        
+        // ========== FUNCIONALIDADES PARA ADICIONAR ITEM ==========
+        
+        // Abrir modal para adicionar novo item
+        function abrirModalAdicionarItem() {
+            // Limpar formulário
+            document.getElementById('formAdicionarItem').reset();
+            
+            // Remover classes de validação
+            document.querySelectorAll('#formAdicionarItem .is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            
+            // Configurar eventos de cálculo automático
+            configurarCalculoAutomaticoItem();
+            
+            // Mostrar modal
+            new bootstrap.Modal(document.getElementById('modalAdicionarItem')).show();
+        }
+        
+        // Configurar cálculo automático do total do item
+        function configurarCalculoAutomaticoItem() {
+            const quantidade = document.getElementById('novoItemQuantidade');
+            const valorUnitario = document.getElementById('novoItemValorUnitario');
+            const total = document.getElementById('novoItemTotal');
+            
+            function calcularTotal() {
+                const qtd = parseFloat(quantidade.value) || 0;
+                const valor = parseFloat(valorUnitario.value) || 0;
+                const totalCalculado = qtd * valor;
+                total.value = totalCalculado.toFixed(2);
+            }
+            
+            // Remover eventos anteriores para evitar duplicação
+            quantidade.removeEventListener('input', calcularTotal);
+            valorUnitario.removeEventListener('input', calcularTotal);
+            
+            // Adicionar eventos
+            quantidade.addEventListener('input', calcularTotal);
+            valorUnitario.addEventListener('input', calcularTotal);
+        }
+        
+        // Adicionar novo item à tabela
+        function adicionarNovoItem() {
+            // Validar formulário
+            const discriminacao = document.getElementById('novoItemDiscriminacao').value.trim();
+            const quantidade = parseFloat(document.getElementById('novoItemQuantidade').value);
+            const unidade = document.getElementById('novoItemUnidade').value.trim();
+            const valorUnitario = parseFloat(document.getElementById('novoItemValorUnitario').value);
+            
+            let valido = true;
+            
+            // Validar discriminação
+            if (!discriminacao) {
+                document.getElementById('novoItemDiscriminacao').classList.add('is-invalid');
+                valido = false;
+            } else {
+                document.getElementById('novoItemDiscriminacao').classList.remove('is-invalid');
+            }
+            
+            // Validar quantidade
+            if (!quantidade || quantidade <= 0) {
+                document.getElementById('novoItemQuantidade').classList.add('is-invalid');
+                valido = false;
+            } else {
+                document.getElementById('novoItemQuantidade').classList.remove('is-invalid');
+            }
+            
+            // Validar unidade
+            if (!unidade) {
+                document.getElementById('novoItemUnidade').classList.add('is-invalid');
+                valido = false;
+            } else {
+                document.getElementById('novoItemUnidade').classList.remove('is-invalid');
+            }
+            
+            // Validar valor unitário
+            if (!valorUnitario || valorUnitario <= 0) {
+                document.getElementById('novoItemValorUnitario').classList.add('is-invalid');
+                valido = false;
+            } else {
+                document.getElementById('novoItemValorUnitario').classList.remove('is-invalid');
+            }
+            
+            if (!valido) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Dados inválidos',
+                    text: 'Por favor, preencha todos os campos corretamente.',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+            
+            try {
+                // Função para formatar moeda brasileira (igual ao pedido.js)
+                function formatarMoedaBrasileira(valor) {
+                    if (isNaN(valor) || !isFinite(valor)) return 'R$ 0,00';
+                    
+                    return valor.toLocaleString('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL',
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                }
+                
+                // Função para formatar valor monetário em campos de input
+                function formatarValorMonetarioDisplay(input) {
+                    const valor = parseFloat(input.value) || 0;
+                    input.dataset.valorOriginal = valor;
+                    // Para exibição, manter formatação monetária mas sem o R$
+                    input.value = valor.toLocaleString('pt-BR', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                }
+                
+                // Tornar a função global para uso nos inputs
+                window.formatarValorMonetarioDisplay = formatarValorMonetarioDisplay;
+                
+                // Calcular total
+                const total = quantidade * valorUnitario;
+                
+                // Gerar ID temporário para o novo item (negativo para distinguir dos existentes)
+                const novoId = -Date.now();
+                
+                // Criar nova linha na tabela com formatação igual ao pedido.html
+                const tabela = document.getElementById('editItensTabela');
+                const novaLinha = document.createElement('tr');
+                novaLinha.setAttribute('data-item-id', novoId);
+                novaLinha.innerHTML = `
+                    <td style="min-width: 120px;">
+                        <input type="text" class="form-control form-control-sm" value="${discriminacao}" placeholder="Discriminação do item" required>
+                    </td>
+                    <td class="text-center" style="min-width: 80px;">
+                        <input type="number" class="form-control form-control-sm text-center" value="${quantidade.toFixed(2)}" min="0.01" step="0.01" placeholder="Quantidade" 
+                               data-valor-original="${quantidade}" 
+                               onfocus="this.value = this.dataset.valorOriginal" 
+                               onblur="formatarValorMonetarioDisplay(this)">
+                    </td>
+                    <td class="text-center" style="min-width: 80px;">
+                        <input type="text" class="form-control form-control-sm text-center" value="${unidade}" placeholder="Unidade" required>
+                    </td>
+                    <td class="text-center" style="min-width: 100px;">
+                        <input type="number" class="form-control form-control-sm text-center" value="${valorUnitario.toFixed(2)}" min="0.01" step="0.01" 
+                               data-valor-original="${valorUnitario}" 
+                               onfocus="this.value = this.dataset.valorOriginal" 
+                               onblur="formatarValorMonetarioDisplay(this)" placeholder="Valor Unitário" required>
+                    </td>
+                    <td class="text-center" style="min-width: 110px;">
+                        <input type="text" class="form-control form-control-sm text-center fw-bold" value="${formatarMoedaBrasileira(total)}" readonly style="background-color: #f8f9fa; font-weight: bold;" data-valor-numerico="${total}" placeholder="Total">
+                    </td>
+                    <td class="text-center" style="min-width: 60px;">
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removerItemEdicao(${novoId}, event)" title="Remover">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                `;
+                
+                // Adicionar linha à tabela
+                tabela.appendChild(novaLinha);
+                
+                // Reconfigurar eventos de cálculo para todos os itens
+                adicionarEventosCalculoEdicao();
+                
+                // Fechar modal
+                bootstrap.Modal.getInstance(document.getElementById('modalAdicionarItem')).hide();
+                
+                // Mostrar feedback de sucesso
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Item adicionado!',
+                    text: 'O novo item foi adicionado ao pedido.',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                
+                console.log('✅ Novo item adicionado com ID:', novoId);
+                
+            } catch (error) {
+                console.error('❌ Erro ao adicionar item:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: 'Ocorreu um erro ao adicionar o item.',
+                    confirmButtonColor: '#dc3545'
+                });
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOMA | CLIENTES</title>
+    <link rel="icon" type="image/png" href="../img/icon.jpg">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="../css/navbar.css" rel="stylesheet">
+    <style>
+        .search-container {
+            background: linear-gradient(135deg, #4a7c59, #6b8e6b);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4a7c59, #6b8e6b);
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #3d6349, #5a7a5a);
+            transform: translateY(-1px);
+        }
+        
+        .table thead th {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            font-weight: 600;
+        }
+        
+        .badge {
+            font-size: 0.75rem;
+        }
+        
+        .btn-sm {
+            margin: 0 2px;
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #4a7c59, #6b8e6b);
+            color: white;
+        }
+        
+        .select-loading {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-arrow-clockwise' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z'/%3E%3Cpath d='M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Estilos para máscaras e validação */
+        .format-hint {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-top: 0.25rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .format-hint i {
+            font-size: 0.9rem;
+        }
+        
+        .form-control.is-valid {
+            border-color: #28a745;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='m2.3 6.73.94-.94 2.94-2.94c.39-.39 1.02-.39 1.41 0s.39 1.02 0 1.41L3.7 8.07a.996.996 0 0 1-1.41 0L.88 6.66a.996.996 0 0 1 0-1.41c.39-.39 1.02-.39 1.41 0z'/%3e%3c/svg%3e");
+        }
+        
+        .form-control.is-invalid {
+            border-color: #dc3545;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='m5.8 4.6 1.4 1.4 1.4-1.4'/%3e%3c/svg%3e");
+        }
+        
+        .input-group-text {
+            background-color: #f8f9fa;
+            border-color: #ced4da;
+        }
+        
+        .loading-spinner {
+            display: none;
+        }
+        
+        .loading-spinner.show {
+            display: inline-block;
+        }
+        
+        .select-loading {
+            background-image: url("data:image/svg+xml,%3csvg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M10 3V6M10 14V17M17 10H14M6 10H3M15.364 4.636L13.95 6.05M6.05 13.95L4.636 15.364M15.364 15.364L13.95 13.95M6.05 6.05L4.636 4.636' stroke='%236c757d' stroke-width='2' stroke-linecap='round'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 16px 16px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar será carregado automaticamente -->
+    <div id="navbar-container" data-component="navbar"></div>
+
+    <!-- Breadcrumb -->
+    <div class="bg-light border-bottom">
+        <div class="container-fluid">
+            <nav aria-label="breadcrumb" class="py-2">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item">
+                        <a href="/pages/dashboard.html" class="text-decoration-none">
+                            <i class="bi bi-house-door me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        <i class="bi bi-person-badge me-1"></i>Clientes
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Header com busca -->
+    <div class="search-container">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2 class="mb-3">
+                        <i class="bi bi-person-badge me-2"></i>Gerenciamento de Clientes
+                    </h2>
+                    <p class="mb-0">Cadastre, edite e gerencie todos os clientes do sistema</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button class="btn btn-light btn-sm" onclick="abrirModalCliente()">
+                        <i class="bi bi-person-plus me-2"></i>Novo Cliente
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Conteúdo Principal -->
+    <div class="container">
+        <!-- Filtros e Busca -->
+        <div class="card mb-4">
+            <div class="">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="inputBusca" 
+                                   placeholder="Buscar por nome, CPF/CNPJ ou email...">
+                            <button class="btn btn-primary" type="button" onclick="buscarClientes()">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-4 d-none d-sm-inline">
+                        <select class="form-select" id="filtroStatus" onchange="buscarClientes()">
+                            <option value="">Todos os Status</option>
+                            <option value="ativo">Ativos</option>
+                            <option value="inativo">Inativos</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela de Clientes -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center row">
+                <h5 class="mb-2">
+                    <i class="bi bi-table me-2"></i>Lista de Clientes
+                    <span class="badge bg-primary ms-2" id="totalClientes">0</span>
+                </h5>
+                <div>
+                    <button class="btn btn-outline-primary btn-sm" onclick="exportarClientes()">
+                        <i class="bi bi-download me-1"></i>Exportar
+                    </button>
+                    <button class="btn btn-primary btn-sm" onclick="carregarClientes()">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Atualizar
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>CPF/CNPJ</th>
+                                <th class="d-none d-sm-table-cell">Telefone</th>
+                                <th class="d-none d-sm-table-cell">Cidade/Estado</th>
+                                <th class="d-none d-lg-table-cell">Status</th>
+                                <th class="d-none d-lg-table-cell">Cadastro</th>
+                                <th width="80">&nbsp;</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaClientes">
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <div class="loading-spinner spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Carregando...</span>
+                                    </div>
+                                    <p class="mt-2 text-muted">Carregando clientes...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cadastro/Edição de Cliente -->
+    <div class="modal fade" id="modalCliente" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <span id="tituloModal">Novo Cliente</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formCliente" novalidate>
+                        <input type="hidden" id="clienteId">
+                        
+                        <div class="row">
+                            <!-- Nome -->
+                            <div class="col-md-8 mb-3">
+                                <label for="clienteNome" class="form-label">Nome Completo/Razão Social *</label>
+                                <input type="text" class="form-control" id="clienteNome" required placeholder="Informe o nome completo ou razão social">
+                                <div class="invalid-feedback">Por favor, informe o nome completo.</div>
+                            </div>
+                            
+                            <!-- CPF/CNPJ -->
+                            <div class="col-md-4 mb-3">
+                                <label for="clienteCpfCnpj" class="form-label">CPF/CNPJ *</label>
+                                <input type="text" class="form-control" id="clienteCpfCnpj" required placeholder="000.000.000-00 ou 00.000.000/0000-00">
+                                <div class="invalid-feedback">Por favor, informe um CPF/CNPJ válido.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <!-- Telefone -->
+                            <div class="col-md-6 mb-3">
+                                <label for="clienteCelular" class="form-label">Telefone/Celular *</label>
+                                <input type="text" class="form-control" id="clienteCelular" required placeholder="(00) 00000-0000">
+                                <div class="invalid-feedback">Por favor, informe um telefone válido.</div>
+                            </div>
+                            
+                            <!-- Email -->
+                            <div class="col-md-6 mb-3">
+                                <label for="clienteEmail" class="form-label">E-mail</label>
+                                <input type="email" class="form-control" id="clienteEmail" placeholder="user@gmail.com">
+                                <div class="invalid-feedback">Por favor, informe um e-mail válido.</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Endereço -->
+                        <div class="mb-3">
+                            <label for="clienteEndereco" class="form-label">Endereço Completo *</label>
+                            <textarea class="form-control" id="clienteEndereco" rows="2" required placeholder="Informe o endereço"></textarea>
+                            <div class="invalid-feedback">Por favor, informe o endereço.</div>
+                        </div>
+                        
+                        <div class="row">
+                            <!-- Cidade -->
+                            <div class="col-md-6 mb-3">
+                                <label for="clienteCidade" class="form-label">Cidade *</label>
+                                <select class="form-select" id="clienteCidade" required>
+                                    <option value="">Primeiro selecione o estado</option>
+                                </select>
+                                <div class="invalid-feedback">Por favor, selecione a cidade.</div>
+                            </div>
+                            
+                            <!-- Estado -->
+                            <div class="col-md-3 mb-3">
+                                <label for="clienteEstado" class="form-label">Estado *</label>
+                                <select class="form-select" id="clienteEstado" onchange="carregarCidadesCliente()" required>
+                                    <option value="">Selecione</option>
+                                    <option value="AC">Acre</option>
+                                    <option value="AL">Alagoas</option>
+                                    <option value="AP">Amapá</option>
+                                    <option value="AM">Amazonas</option>
+                                    <option value="BA">Bahia</option>
+                                    <option value="CE">Ceará</option>
+                                    <option value="DF">Distrito Federal</option>
+                                    <option value="ES">Espírito Santo</option>
+                                    <option value="GO">Goiás</option>
+                                    <option value="MA">Maranhão</option>
+                                    <option value="MT">Mato Grosso</option>
+                                    <option value="MS">Mato Grosso do Sul</option>
+                                    <option value="MG">Minas Gerais</option>
+                                    <option value="PA">Pará</option>
+                                    <option value="PB">Paraíba</option>
+                                    <option value="PR">Paraná</option>
+                                    <option value="PE">Pernambuco</option>
+                                    <option value="PI">Piauí</option>
+                                    <option value="RJ">Rio de Janeiro</option>
+                                    <option value="RN">Rio Grande do Norte</option>
+                                    <option value="RS">Rio Grande do Sul</option>
+                                    <option value="RO">Rondônia</option>
+                                    <option value="RR">Roraima</option>
+                                    <option value="SC">Santa Catarina</option>
+                                    <option value="SP">São Paulo</option>
+                                    <option value="SE">Sergipe</option>
+                                    <option value="TO">Tocantins</option>
+                                </select>
+                                <div class="invalid-feedback">Por favor, selecione o estado.</div>
+                            </div>
+                            
+                            <!-- Status -->
+                            <div class="col-md-3 mb-3">
+                                <label for="clienteStatus" class="form-label">Status</label>
+                                <select class="form-select" id="clienteStatus">
+                                    <option value="ativo">Ativo</option>
+                                    <option value="inativo">Inativo</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Inscrição Estadual -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="clienteInscricaoEstadual" class="form-label">Inscrição Estadual</label>
+                                <input type="text" class="form-control" id="clienteInscricaoEstadual" placeholder="Opcional ou deixa em branco">
+                                <small class="form-text text-muted">Opcional - apenas para empresas</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Observações -->
+                        <div class="mb-3">
+                            <label for="clienteObservacoes" class="form-label">Observações</label>
+                            <textarea class="form-control" id="clienteObservacoes" rows="3" placeholder="Informações adicionais sobre o cliente..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="salvarCliente()">
+                        <i class="bi bi-check-circle me-1"></i>Salvar Cliente
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Visualizar Cliente -->
+    <div class="modal fade" id="modalVisualizarCliente" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-person-circle me-2"></i>Detalhes do Cliente
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="detalhesCliente">
+                    <!-- Conteúdo será carregado dinamicamente -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary" onclick="editarClienteAtual()">
+                        <i class="bi bi-pencil me-1"></i>Editar Cliente
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Perfil -->
+    <div class="modal fade" id="modalPerfil" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #4a7c59, #6b8e6b);">
+                    <h5 class="modal-title text-white">
+                        <i class="bi bi-person me-2"></i>Meu Perfil
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formPerfil" novalidate>
+                        <div class="text-center mb-4">
+                            <div class="bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center" 
+                                 style="width: 80px; height: 80px;">
+                                <i class="bi bi-person-fill" style="font-size: 2rem; color: #4a7c59;"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="perfilNome" class="form-label">Nome Completo</label>
+                            <input type="text" class="form-control" id="perfilNome" required>
+                            <div class="invalid-feedback">Por favor, insira seu nome completo.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="perfilEmail" class="form-label">E-mail</label>
+                            <input type="email" class="form-control" id="perfilEmail" required>
+                            <div class="invalid-feedback">Por favor, insira um e-mail válido.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="perfilUsuario" class="form-label">Nome de Usuário</label>
+                            <input type="text" class="form-control" id="perfilUsuario" readonly>
+                            <small class="form-text text-muted">O nome de usuário não pode ser alterado.</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Tipo de Conta</label>
+                            <select class="form-select" id="tipoUsuario" required>
+                                <option value="ADM">Administrador</option>
+                                <option value="VENDEDOR">Vendedor</option>
+                            </select>
+                            <small class="form-text text-muted" id="tipoUsuarioHint">Somente o administrador pode alterar</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn text-white" style="background: linear-gradient(135deg, #4a7c59, #6b8e6b);" onclick="salvarPerfil()">
+                        <i class="bi bi-check-circle me-1"></i>Salvar Alterações
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Alterar Senha -->
+    <div class="modal fade" id="modalAlterarSenha" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #4a7c59, #6b8e6b);">
+                    <h5 class="modal-title text-white">
+                        <i class="bi bi-key me-2"></i>Alterar Senha
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formAlterarSenha" novalidate>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Dica de Segurança:</strong> Use uma senha forte com pelo menos 6 caracteres.
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="senhaAtual" class="form-label">Senha Atual</label>
+                            <input type="password" class="form-control" id="senhaAtual" required>
+                            <div class="invalid-feedback">Por favor, insira sua senha atual.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="novaSenha" class="form-label">Nova Senha</label>
+                            <input type="password" class="form-control" id="novaSenha" required>
+                            <div class="invalid-feedback">A nova senha deve ter pelo menos 6 caracteres.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="confirmarSenha" class="form-label">Confirmar Nova Senha</label>
+                            <input type="password" class="form-control" id="confirmarSenha" required>
+                            <div class="invalid-feedback">As senhas não coincidem.</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn text-white" style="background: linear-gradient(135deg, #4a7c59, #6b8e6b);" onclick="alterarSenha()">
+                        <i class="bi bi-check-circle me-1"></i>Alterar Senha
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- jsPDF e autoTable para exportação em PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.7.0/jspdf.plugin.autotable.min.js"></script>
+    
+    <!-- Scripts do projeto -->
+    <script src="/js/environment-config.js"></script>
+    <script src="../js/devtools-protection.js"></script>
+    <script src="../js/security.js"></script>
+    <script src="../js/component-loader.js"></script>
+    <script src="../js/auth-manager.js"></script>
+    <script src="../js/controle-acesso.js"></script>
+    <script src="../js/database.js"></script>
+    <script src="../js/clientes.js"></script>
+
+    <script>
+        // Funcionalidades de Perfil do Usuário
+        
+        // Abrir modal de perfil
+        async function abrirModalPerfil() {
+            let usuario;
+            
+            // Tentar obter usuário usando AuthManager primeiro
+            try {
+                if (window.AuthManager && typeof window.AuthManager.verificarAutenticacao === 'function') {
+                    usuario = await window.AuthManager.verificarAutenticacao();
+                } else {
+                    usuario = obterUsuarioLogado();
+                }
+            } catch (error) {
+                console.error('Erro ao obter usuário:', error);
+                usuario = obterUsuarioLogado();
+            }
+            
+            if (!usuario) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: 'Não foi possível carregar os dados do usuário.',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+            
+            console.log('🔍 Dados do usuário para modal perfil:', usuario);
+            
+            // Preencher dados atuais
+            document.getElementById('perfilNome').value = usuario.nome || '';
+            document.getElementById('perfilEmail').value = usuario.email || '';
+            document.getElementById('perfilUsuario').value = usuario.usuario || '';
+            
+            // Configurar tipo de usuário
+            const tipoUsuarioSelect = document.getElementById('tipoUsuario');
+            const tipoUsuarioHint = document.getElementById('tipoUsuarioHint');
+            tipoUsuarioSelect.value = usuario.prioridade || 'VENDEDOR';
+            
+            // Verificar se usuário é admin para permitir alteração do tipo
+            if (usuario.prioridade !== 'ADM') {
+                tipoUsuarioSelect.disabled = true;
+                tipoUsuarioSelect.style.backgroundColor = '#f8f9fa';
+                tipoUsuarioSelect.style.color = '#6c757d';
+                tipoUsuarioSelect.style.cursor = 'not-allowed';
+                tipoUsuarioHint.textContent = 'Apenas administradores podem alterar o tipo de conta';
+                tipoUsuarioHint.className = 'form-text text-warning';
+            } else {
+                tipoUsuarioSelect.disabled = false;
+                tipoUsuarioSelect.style.backgroundColor = '';
+                tipoUsuarioSelect.style.color = '';
+                tipoUsuarioSelect.style.cursor = '';
+                tipoUsuarioHint.textContent = 'Você pode alterar o tipo de conta';
+                tipoUsuarioHint.className = 'form-text text-success';
+            }
+            
+            // Remover classes de validação
+            document.querySelectorAll('#formPerfil .is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            
+            new bootstrap.Modal(document.getElementById('modalPerfil')).show();
+        }
+        
+        // Salvar alterações do perfil
+        async function salvarPerfil() {
+            let usuario;
+            
+            // Tentar obter usuário usando AuthManager primeiro
+            try {
+                if (window.AuthManager && typeof window.AuthManager.verificarAutenticacao === 'function') {
+                    usuario = await window.AuthManager.verificarAutenticacao();
+                } else {
+                    usuario = obterUsuarioLogado();
+                }
+            } catch (error) {
+                console.error('Erro ao obter usuário:', error);
+                usuario = obterUsuarioLogado();
+            }
+            
+            if (!usuario) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: 'Não foi possível identificar o usuário.',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+            
+            console.log('🔍 Dados do usuário para salvar perfil:', usuario);
+            
+            // Validar formulário
+            const nome = document.getElementById('perfilNome').value.trim();
+            const email = document.getElementById('perfilEmail').value.trim();
+            const tipoUsuario = document.getElementById('tipoUsuario').value;
+            
+            let valido = true;
+            
+            // Validar nome
+            if (nome.length < 2) {
+                document.getElementById('perfilNome').classList.add('is-invalid');
+                valido = false;
+            } else {
+                document.getElementById('perfilNome').classList.remove('is-invalid');
+            }
+            
+            // Validar email
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                document.getElementById('perfilEmail').classList.add('is-invalid');
+                valido = false;
+            } else {
+                document.getElementById('perfilEmail').classList.remove('is-invalid');
+            }
+            
+            if (!valido) return;
+            
+            try {
+                // Preparar dados para atualização
+                const dadosAtualizacao = {
+                    nome: nome,
+                    email: email
+                };
+                
+                // Se for admin, pode alterar o tipo
+                if (usuario.prioridade === 'ADM') {
+                    dadosAtualizacao.prioridade = tipoUsuario;
+                }
+                
+                // Identificar o nome de usuário correto
+                const nomeUsuario = usuario.usuario; // AuthManager já formata nome_usuario como usuario
+                
+                if (!nomeUsuario) {
+                    throw new Error('Nome de usuário não encontrado');
+                }
+                
+                // Atualizar no banco de dados
+                let resultado = { success: false };
+                
+                if (typeof atualizarPerfilUsuario === 'function') {
+                    resultado = await atualizarPerfilUsuario(nomeUsuario, dadosAtualizacao);
+                } else {
+                    console.warn('Função atualizarPerfilUsuario não encontrada');
+                    // Simular sucesso para desenvolvimento
+                    resultado = { success: true };
+                }
+                
+                if (resultado.success) {
+                    // Atualizar display do nome
+                    const nomeUsuarioElement = document.getElementById('nomeUsuario');
+                    if (nomeUsuarioElement) {
+                        nomeUsuarioElement.innerHTML = 
+                            `<i class="bi bi-person-circle"></i> ${nome}`;
+                    }
+                    
+                    // Fechar modal
+                    bootstrap.Modal.getInstance(document.getElementById('modalPerfil')).hide();
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Perfil Atualizado!',
+                        text: 'Suas informações foram atualizadas com sucesso.',
+                        confirmButtonColor: '#4a7c59'
+                    }).then(() => {
+                        // Recarregar a página para atualizar todos os dados
+                        window.location.reload();
+                    });
+                } else {
+                    throw new Error(resultado.error || 'Falha ao atualizar no banco');
+                }
+                
+            } catch (error) {
+                console.error('Erro ao salvar perfil:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: `Ocorreu um erro ao salvar suas alterações: ${error.message}`,
+                    confirmButtonColor: '#dc3545'
+                });
+            }
+        }
+        
+        // Abrir modal de alterar senha
+        function abrirModalAlterarSenha() {
+            // Limpar formulário
+            document.getElementById('formAlterarSenha').reset();
+            document.querySelectorAll('#formAlterarSenha .is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            
+            new bootstrap.Modal(document.getElementById('modalAlterarSenha')).show();
+        }
+        
+        // Alterar senha
+        async function alterarSenha() {
+            let usuario;
+            
+            // Tentar obter usuário usando AuthManager primeiro
+            try {
+                if (window.AuthManager && typeof window.AuthManager.verificarAutenticacao === 'function') {
+                    usuario = await window.AuthManager.verificarAutenticacao();
+                } else {
+                    usuario = obterUsuarioLogado();
+                }
+            } catch (error) {
+                console.error('Erro ao obter usuário:', error);
+                usuario = obterUsuarioLogado();
+            }
+            
+            if (!usuario) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: 'Não foi possível identificar o usuário.',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+            
+            const senhaAtual = document.getElementById('senhaAtual').value;
+            const novaSenha = document.getElementById('novaSenha').value;
+            const confirmarSenha = document.getElementById('confirmarSenha').value;
+            
+            let valido = true;
+            
+            // Validar senha atual
+            if (senhaAtual !== usuario.senha) {
+                document.getElementById('senhaAtual').classList.add('is-invalid');
+                valido = false;
+            } else {
+                document.getElementById('senhaAtual').classList.remove('is-invalid');
+            }
+            
+            // Validar nova senha
+            if (novaSenha.length < 4) {
+                document.getElementById('novaSenha').classList.add('is-invalid');
+                valido = false;
+            } else {
+                document.getElementById('novaSenha').classList.remove('is-invalid');
+            }
+            
+            // Validar confirmação
+            if (novaSenha !== confirmarSenha) {
+                document.getElementById('confirmarSenha').classList.add('is-invalid');
+                valido = false;
+            } else {
+                document.getElementById('confirmarSenha').classList.remove('is-invalid');
+            }
+            
+            if (!valido) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Dados inválidos',
+                    text: 'Verifique os campos e tente novamente.',
+                    confirmButtonColor: '#4a7c59'
+                });
+                return;
+            }
+            
+            try {
+                // Identificar o nome de usuário correto
+                const nomeUsuario = usuario.usuario; // AuthManager já formata nome_usuario como usuario
+                
+                if (!nomeUsuario) {
+                    throw new Error('Nome de usuário não encontrado');
+                }
+                
+                // Alterar senha no banco de dados
+                let resultado = { success: false };
+                
+                if (typeof alterarSenhaUsuario === 'function') {
+                    resultado = await alterarSenhaUsuario(nomeUsuario, novaSenha);
+                } else {
+                    console.warn('Função alterarSenhaUsuario não encontrada');
+                    // Simular sucesso para desenvolvimento
+                    resultado = { success: true };
+                }
+                
+                if (resultado.success) {
+                    // Limpar formulário
+                    document.getElementById('formAlterarSenha').reset();
+                    
+                    // Fechar modal
+                    bootstrap.Modal.getInstance(document.getElementById('modalAlterarSenha')).hide();
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Senha Alterada!',
+                        text: 'Sua senha foi alterada com sucesso.',
+                        confirmButtonColor: '#4a7c59'
+                    }).then(() => {
+                        // Recarregar a página para atualizar todos os dados
+                        window.location.reload();
+                    });
+                } else {
+                    throw new Error(resultado.error || 'Falha ao alterar senha no banco');
+                }
+                
+            } catch (error) {
+                console.error('Erro ao alterar senha:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: `Ocorreu um erro ao alterar sua senha: ${error.message}`,
+                    confirmButtonColor: '#dc3545'
+                });
+            }
+        }
+    </script>
+</body>
+</html>

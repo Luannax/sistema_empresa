@@ -1,0 +1,18 @@
+/*
+  Linhas da tabela de fornecedores:
+  .linha-pago    = verde (pago)
+  .linha-vencido = vermelho (vencido)
+  .linha-vencendo = amarelo (vencendo)
+*/
+.linha-pago {
+  background-color: #d1e7dd !important;
+  color: #155724 !important;
+}
+.linha-vencido {
+  background-color: #f8d7da !important;
+  color: #842029 !important;
+}
+.linha-vencendo {
+  background-color: #fff3cd !important;
+  color: #856404 !important;
+}

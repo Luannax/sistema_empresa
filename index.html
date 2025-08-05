@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMPRESA | LOGIN</title>
+    <link rel="icon" type="image/png" href="img/logo.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background: 
+                linear-gradient(135deg, rgba(74, 124, 89, 0.85) 0%, rgba(107, 142, 107, 0.8) 50%, rgba(52, 98, 48, 0.9) 100%),
+                url('img/fundologin.jpg') center/cover no-repeat fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.04) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            overflow: hidden;
+            max-width: 450px;
+            width: 100%;
+            margin: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, #4a7c59 0%, #346230 100%);
+            color: white;
+            text-align: center;
+            padding: 2rem 2rem 1.5rem;
+            position: relative;
+        }
+
+        .login-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="15" height="15" patternUnits="userSpaceOnUse"><path d="M 15 0 L 0 0 0 15" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.4;
+        }
+
+        .login-header h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+            position: relative;
+            z-index: 2;
+        }
+
+        .login-header p {
+            margin: 0.5rem 0 0;
+            opacity: 0.9;
+            font-size: 0.95rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo-container {
+            position: relative;
+            z-index: 2;
+            margin-bottom: 1rem;
+        }
+
+        .logo-container img {
+            max-width: 120px;
+            height: auto;
+            filter: brightness(0) invert(1);
+        }
+
+        .login-body {
+            padding: 2rem;
+        }
+
+        .form-control {
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            padding: 12px 16px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+        }
+
+        .form-control:focus {
+            background-color: #fff;
+            border-color: #4a7c59;
+            box-shadow: 0 0 0 0.2rem rgba(74, 124, 89, 0.15);
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, #4a7c59 0%, #346230 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(74, 124, 89, 0.3);
+            background: linear-gradient(135deg, #346230 0%, #2d5429 100%);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.7;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .forgot-password a {
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password a:hover {
+            color: #4a7c59;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            z-index: 3;
+        }
+
+        .form-control.with-icon {
+            padding-left: 45px;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .shape:nth-child(1) {
+            width: 120px;
+            height: 120px;
+            left: 5%;
+            top: 15%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            width: 80px;
+            height: 80px;
+            right: 8%;
+            top: 70%;
+            animation-delay: 3s;
+        }
+
+        .shape:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            left: 75%;
+            top: 5%;
+            animation-delay: 6s;
+        }
+
+        .shape:nth-child(4) {
+            width: 60px;
+            height: 60px;
+            right: 20%;
+            bottom: 15%;
+            animation-delay: 2s;
+        }
+
+        .shape:nth-child(5) {
+            width: 90px;
+            height: 90px;
+            left: 15%;
+            bottom: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { 
+                transform: translateY(0px) rotate(0deg) scale(1); 
+                opacity: 0.6;
+            }
+            33% { 
+                transform: translateY(-15px) rotate(120deg) scale(1.05); 
+                opacity: 0.4;
+            }
+            66% { 
+                transform: translateY(-8px) rotate(240deg) scale(0.95); 
+                opacity: 0.8;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .login-container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .login-header {
+                padding: 1.5rem 1.5rem 1rem;
+            }
+            
+            .login-body {
+                padding: 1.5rem;
+            }
+            
+            .login-header h1 {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating background shapes -->
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <div class="login-container">
+        <!-- Header with logo and title -->
+        <div class="login-header">
+            <div class="logo-container">
+                <img src="img/logo.png" alt="Logo x">
+            </div>
+            <h1>Bem-vindo(a)</h1>
+            <p>Sistema de Gestão Empresa Y</p>
+        </div>
+
+        <!-- Login form -->
+        <div class="login-body">
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label for="username" class="form-label">
+                        <i class="bi bi-person me-2"></i>Usuário
+                    </label>
+                    <div class="input-group">
+                        <i class="bi bi-person input-icon"></i>
+                        <input type="text" class="form-control with-icon" id="username" name="username" 
+                               required placeholder="Digite seu usuário" autocomplete="username">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="password" class="form-label">
+                        <i class="bi bi-lock me-2"></i>Senha
+                    </label>
+                    <div class="input-group">
+                        <i class="bi bi-lock input-icon"></i>
+                        <input type="password" class="form-control with-icon" id="password" name="password" 
+                               required placeholder="Digite sua senha" autocomplete="current-password">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-login w-100" id="loginBtn">
+                    <span class="btn-text">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Entrar no Sistema
+                    </span>
+                    <div class="loading-spinner"></div>
+                </button>
+            </form>
+
+            <!-- Forgot password section -->
+            <div class="forgot-password">
+                <a href="#" onclick="mostrarRecuperacaoSenha()">
+                    <i class="bi bi-question-circle me-1"></i>Esqueci minha senha
+                </a>
+            </div>
+            
+            <div class="text-center mt-3">
+                <span class="btn-text">
+                    <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>Para entrar no sistema, utilize o usuário (root) e senha (root).
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Scripts do projeto -->
+    <script src="js/auth-manager.js"></script>
+    <script src="js/security.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/login.js"></script>
+
+    <script>
+        // Função para mostrar informações de recuperação de senha
+        function mostrarRecuperacaoSenha() {
+            Swal.fire({
+                icon: 'info',
+                title: 'Recuperação de Senha',
+                html: `
+                    <div class="text-start">
+                        <p><strong>Esqueceu sua senha?</strong></p>
+                        <p>Para recuperar o acesso ao sistema, entre em contato através de:</p>
+                        <hr>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-envelope-fill text-primary me-2"></i>
+                            <strong>Email:</strong> <span class="ms-2">luanna.dev@gmail.com</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-telephone-fill text-success me-2"></i>
+                            <strong>Telefone:</strong> <span class="ms-2">(65) 9 9933-2213</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="bi bi-whatsapp text-success me-2"></i>
+                            <strong>WhatsApp:</strong> <span class="ms-2">(65) 9 9933-2213</span>
+                        </div>
+                        <hr>
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Informe seu nome de usuário e empresa para agilizar o atendimento.
+                        </small>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Entrar em Contato',
+                confirmButtonColor: '#4a7c59',
+                cancelButtonText: 'Fechar',
+                cancelButtonColor: '#6c757d',
+                width: '500px'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Abrir WhatsApp com mensagem pré-definida
+                    const usuario = document.getElementById('username').value || '[Usuário não informado]';
+                    const mensagem = `Olá! Preciso recuperar minha senha do sistema empresa y (Gestão). Meu usuário é: ${usuario}`;
+                    const whatsappUrl = `https://wa.me/5565999332213?text=${encodeURIComponent(mensagem)}`;
+                    window.open(whatsappUrl, '_blank');
+                }
+            });
+        }
+
+        // Verificar se deve exibir o link de usuários disponíveis
+        async function verificarExibicaoLinkUsuarios() {
+            try {
+                const usuario = await window.AuthManager.obterUsuarioAtual();
+                const linkUsuarios = document.getElementById('linkUsuariosDisponiveis');
+                
+                if (usuario && usuario.prioridade === 'ADM') {
+                    if (linkUsuarios) {
+                        linkUsuarios.style.display = 'inline-block';
+                    }
+                } else {
+                    if (linkUsuarios) {
+                        linkUsuarios.style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.log('Erro ao verificar usuário:', error);
+                const linkUsuarios = document.getElementById('linkUsuariosDisponiveis');
+                if (linkUsuarios) {
+                    linkUsuarios.style.display = 'none';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

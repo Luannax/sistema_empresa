@@ -1,0 +1,1934 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMPRESA | PEDIDO</title>
+    <link rel="icon" type="image/png" href="../img/logo.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="../css/navbar.css" rel="stylesheet">
+    <style>
+        /* Estilo para campos com máscara */
+        .campo-mascara {
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+        }
+        
+        .campo-mascara:focus {
+            box-shadow: 0 0 0 0.2rem rgba(74, 124, 89, 0.25);
+            border-color: #4a7c59;
+        }
+        
+        /* Dica visual para formatos */
+        .format-hint {
+            font-size: 0.75rem;
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .format-hint .badge {
+            font-size: 0.7rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar será carregado automaticamente -->
+    <div id="navbar-container" data-component="navbar"></div>
+
+    <!-- Breadcrumb -->
+    <div class="bg-light border-bottom">
+        <div class="container-fluid">
+            <nav aria-label="breadcrumb" class="py-2">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item">
+                        <a href="/pages/dashboard.html" class="text-decoration-none">
+                            <i class="bi bi-house-door me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        <i class="bi bi-plus-circle me-1"></i>Novo Pedido
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <form id="form_cadastrar_pedido" name="form_cadastrar_pedido" class="form-horizontal" novalidate>
+        <div class="container mt-4">
+            <div class="item form-group"></div>
+            <!-- Dados do Cliente -->
+            <div class="card mb-4">
+                <div class="card-header text-white" style="background-color: #4a7c59;">
+                    <h5 class="mb-0">Dados do Cliente</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Seleção do tipo de cliente -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="d-flex flex-wrap gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipoCliente" id="clienteNovo" value="novo" checked>
+                                    <label class="form-check-label fw-bold" for="clienteNovo">
+                                        <i class="bi bi-person-plus me-2"></i>Cliente Novo
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipoCliente" id="clienteExistente" value="existente">
+                                    <label class="form-check-label fw-bold" for="clienteExistente">
+                                        <i class="bi bi-person-check me-2"></i>Cliente Cadastrado
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seleção de cliente existente -->
+                    <div id="selectorClienteExistente" class="row mb-3" style="display: none;">
+                        <div class="col-12">
+                            <label class="form-label">Selecionar Cliente <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <select class="form-select" id="selectCliente" onchange="preencherDadosCliente()">
+                                    <option value="">Carregando clientes...</option>
+                                </select>
+                                <button class="btn btn-outline-secondary" type="button" onclick="carregarClientesCadastrados()">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formulário de dados do cliente -->
+                    <div id="formDadosCliente">
+                        <div class="row mb-3">
+                            <div class="col-12 col-sm-6 col-lg-4 mb-3 mb-lg-0">
+                                <label class="form-label">Nome <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="clienteNome" placeholder="Digite o nome" required>
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-4 mb-3 mb-lg-0">
+                                <label class="form-label">CPF/CNPJ <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="clienteCpfCnpj" placeholder="Digite o CPF ou CNPJ" required>
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-4 mb-3 mb-lg-0">
+                                <label class="form-label">Celular <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="clienteCelular" placeholder="Digite o celular" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12 col-sm-6 col-lg-4 mb-3 mb-lg-0">
+                                <label class="form-label">Endereço <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="clienteEndereco" placeholder="Digite o endereço" required>
+                            </div>
+                            
+                            <div class="col-12 col-sm-6 col-lg-4 mb-3 mb-lg-0">
+                                <label class="form-label">Estado</label>
+                                <select class="form-select" id="selectEstado" onchange="carregarCidades()">
+                                    <option value="">Selecione o estado</option>
+                                    <option value="AC">Acre</option>
+                                    <option value="AL">Alagoas</option>
+                                    <option value="AP">Amapá</option>
+                                    <option value="AM">Amazonas</option>
+                                    <option value="BA">Bahia</option>
+                                    <option value="CE">Ceará</option>
+                                    <option value="DF">Distrito Federal</option>
+                                    <option value="ES">Espírito Santo</option>
+                                    <option value="GO">Goiás</option>
+                                    <option value="MA">Maranhão</option>
+                                    <option value="MT">Mato Grosso</option>
+                                    <option value="MS">Mato Grosso do Sul</option>
+                                    <option value="MG">Minas Gerais</option>
+                                    <option value="PA">Pará</option>
+                                    <option value="PB">Paraíba</option>
+                                    <option value="PR">Paraná</option>
+                                    <option value="PE">Pernambuco</option>
+                                    <option value="PI">Piauí</option>
+                                    <option value="RJ">Rio de Janeiro</option>
+                                    <option value="RN">Rio Grande do Norte</option>
+                                    <option value="RS">Rio Grande do Sul</option>
+                                    <option value="RO">Rondônia</option>
+                                    <option value="RR">Roraima</option>
+                                    <option value="SC">Santa Catarina</option>
+                                    <option value="SP">São Paulo</option>
+                                    <option value="SE">Sergipe</option>
+                                    <option value="TO">Tocantins</option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-4 mb-3 mb-lg-0">
+                                <label class="form-label">Cidade</label>
+                                <select class="form-select" id="selectCidade" disabled>
+                                    <option value="">Primeiro selecione o estado</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12 col-sm-6 col-lg-4 mb-3 mb-lg-0">
+                                <label class="form-label">Data de Cadastro</label>
+                                <input type="date" class="form-control" id="dataCadastro" readonly>
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-4 mb-3 mb-lg-0">
+                                <label class="form-label">Inscrição Estadual</label>
+                                <input type="text" class="form-control" id="clienteInscricaoEstadual" placeholder="Digite a inscrição estadual">
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-4 mb-3 mb-lg-0">
+                                <label class="form-label">E-mail</label>
+                                <input type="email" class="form-control" id="clienteEmail" placeholder="Digite o e-mail">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mt-4">
+            <div class="item form-group">
+                <!-- Dados do Pedido -->
+                <div class="card mb-4">
+                    <div class="card-header text-white" style="background-color: #4a7c59;">
+                        <h5 class="mb-0">Dados do Pedido</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Discriminação</label>
+                                <input type="text" class="form-control" placeholder="Descreva o item" id="discriminacao">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12 col-sm-6 col-lg-3 mb-3 mb-lg-0">
+                                <label class="form-label">Quantidade</label>
+                                <input type="number" class="form-control" placeholder="0" id="quantidade">
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3 mb-3 mb-lg-0">
+                                <label class="form-label">Unidade</label>
+                                <input type="text" class="form-control" placeholder="Ex: kg, un, caixa, sc" id="unidade">
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3 mb-3 mb-lg-0">
+                                <label class="form-label">Valor unitário</label>
+                                <input type="text" class="form-control" placeholder="Ex: 0,00" id="valorUnitario">
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3 mb-3 mb-lg-0">
+                                <label class="form-label">Total do Item</label>
+                                <input type="text" class="form-control" readonly placeholder="R$ 0,00" id="totalItem" style="background-color: #f8f9fa; font-weight: bold; color: #28a745;">
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-12 d-flex justify-content-center justify-content-sm-end">
+                                <button type="button" class="btn text-white px-4 me-2" style="background-color: #28a745;" onclick="adicionarItem()">
+                                    <i class="bi bi-plus-circle me-2"></i>
+                                    Adicionar Item
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de Itens Adicionados -->
+            <div class="card mb-4" id="cardItens" style="display: none;">
+                <div class="card-header text-white" style="background-color: #17a2b8;">
+                    <h5 class="mb-0">
+                        <i class="bi bi-cart3 me-2"></i>
+                        <span >Itens do Pedido <span id="totalItens" class="d-none d-sm-inline">0</span></span>
+                        <span class="float-end d-inline">Total: <span id="totalGeral">0,00</span></span>
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Discriminação</th>
+                                    <th class="text-center d-none d-sm-table-cell" style="width: 80px;">Qtd</th>
+                                    <th class="text-center d-none d-sm-table-cell" style="width: 100px;">Un.</th>
+                                    <th class="text-center d-none d-sm-table-cell" style="width: 120px;">Vl. Unit.</th>
+                                    <th class="text-center" style="width: 120px;">Total</th>
+                                    <th class="text-center" style="width: 80px;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaItens">
+                                <!-- Itens serão adicionados aqui dinamicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botão Finalizar Pedido -->
+            <div class="row">
+                <div class="col-12 d-flex justify-content-center justify-content-sm-end mb-3">
+                    <button type="submit" class="btn btn-primary text-white px-5" style="font-size: 1.1rem;">
+                        <i class="bi bi-check-circle me-2"></i>
+                        Finalizar Pedido
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Scripts do projeto -->
+    <script src="../js/environment-config.js"></script>
+    <script src="../js/devtools-protection.js"></script>
+    <script src="../js/security.js"></script>
+    <script src="../js/auth-manager.js"></script>
+    <script src="../js/component-loader.js"></script>
+    <script src="../js/controle-acesso.js"></script>
+    <script src="../js/database.js"></script>
+    <script src="../js/pedido.js"></script>
+    <script>
+    // Sincronizar o valor do total para XS e SM
+    function atualizarTotalGeralPedido(valor) {
+        const totalGeral = document.getElementById('totalGeral');
+        if (totalGeral) totalGeral.textContent = valor;
+    }
+    // Se já existe função que atualiza o total, sobrescreva para chamar essa também
+    window.atualizarTotalGeralPedido = atualizarTotalGeralPedido;
+    </script>
+
+    <!-- Modais de Perfil -->
+    <!-- Modal Editar Perfil -->
+    <div class="modal fade" id="modalPerfil" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #4a7c59, #6b8e6b);">
+                    <h5 class="modal-title text-white">
+                        <i class="bi bi-person me-2"></i>Meu Perfil
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formPerfil" novalidate>
+                        <div class="text-center mb-4">
+                            <div class="bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center" 
+                                 style="width: 80px; height: 80px;">
+                                <i class="bi bi-person-fill" style="font-size: 2rem; color: #4a7c59;"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="perfilNome" class="form-label">Nome Completo</label>
+                            <input type="text" class="form-control" id="perfilNome" required>
+                            <div class="invalid-feedback">Por favor, insira seu nome completo.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="perfilEmail" class="form-label">E-mail</label>
+                            <input type="email" class="form-control" id="perfilEmail" required>
+                            <div class="invalid-feedback">Por favor, insira um e-mail válido.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="perfilUsuario" class="form-label">Nome de Usuário</label>
+                            <input type="text" class="form-control" id="perfilUsuario" readonly>
+                            <small class="form-text text-muted">O nome de usuário não pode ser alterado.</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Tipo de Conta</label>
+                            <select class="form-select" id="tipoUsuario" required>
+                                <option value="ADM">Administrador</option>
+                                <option value="VENDEDOR">Vendedor</option>
+                            </select>
+                            <small class="form-text text-muted" id="tipoUsuarioHint">Somente o administrador pode alterar</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn text-white" style="background: linear-gradient(135deg, #4a7c59, #6b8e6b);" onclick="salvarPerfil()">
+                        <i class="bi bi-check-circle me-1"></i>Salvar Alterações
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Alterar Senha -->
+    <div class="modal fade" id="modalAlterarSenha" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #4a7c59, #6b8e6b);">
+                    <h5 class="modal-title text-white">
+                        <i class="bi bi-key me-2"></i>Alterar Senha
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formAlterarSenha" novalidate>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Dica de Segurança:</strong> Use uma senha forte com pelo menos 4 caracteres.
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="senhaAtual" class="form-label">Senha Atual</label>
+                            <input type="password" class="form-control" id="senhaAtual" required>
+                            <div class="invalid-feedback">Por favor, insira sua senha atual.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="novaSenha" class="form-label">Nova Senha</label>
+                            <input type="password" class="form-control" id="novaSenha" required>
+                            <div class="invalid-feedback">A nova senha deve ter pelo menos 4 caracteres.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="confirmarSenha" class="form-label">Confirmar Nova Senha</label>
+                            <input type="password" class="form-control" id="confirmarSenha" required>
+                            <div class="invalid-feedback">As senhas não coincidem.</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn text-white" style="background: linear-gradient(135deg, #4a7c59, #6b8e6b);" onclick="alterarSenha()">
+                        <i class="bi bi-check-circle me-1"></i>Alterar Senha
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Funcionalidades de Máscaras para Campos
+        
+        // Função para aplicar máscara de CPF: 000.000.000-00
+        function aplicarMascaraCPF(valor) {
+            return valor
+                .replace(/\D/g, '') // Remove tudo que não é dígito
+                .substring(0, 11) // Limita a 11 dígitos
+                .replace(/(\d{3})(\d)/, '$1.$2') // Coloca ponto após os 3 primeiros dígitos
+                .replace(/(\d{3})(\d)/, '$1.$2') // Coloca ponto após os 6 primeiros dígitos
+                .replace(/(\d{3})(\d{1,2})$/, '$1-$2'); // Coloca hífen antes dos 2 últimos dígitos
+        }
+        
+        // Função para aplicar máscara de CNPJ: 00.000.000/0000-00
+        function aplicarMascaraCNPJ(valor) {
+            return valor
+                .replace(/\D/g, '') // Remove tudo que não é dígito
+                .substring(0, 14) // Limita a 14 dígitos
+                .replace(/(\d{2})(\d)/, '$1.$2') // Coloca ponto após os 2 primeiros dígitos
+                .replace(/(\d{3})(\d)/, '$1.$2') // Coloca ponto após os 5 primeiros dígitos
+                .replace(/(\d{3})(\d)/, '$1/$2') // Coloca barra após os 8 primeiros dígitos
+                .replace(/(\d{4})(\d{1,2})$/, '$1-$2'); // Coloca hífen antes dos 2 últimos dígitos
+        }
+        
+        // Função para aplicar máscara de celular: (00) 00000-0000
+        function aplicarMascaraCelular(valor) {
+            return valor
+                .replace(/\D/g, '') // Remove tudo que não é dígito
+                .replace(/(\d{2})(\d)/, '($1) $2') // Coloca parênteses e espaço após os 2 primeiros dígitos
+                .replace(/(\d{5})(\d)/, '$1-$2') // Coloca hífen após os 5 primeiros dígitos do número
+                .replace(/(-\d{4})\d+?$/, '$1'); // Impede entrada de mais de 4 dígitos após o hífen
+        }
+        
+        // Função para permitir apenas letras e alguns caracteres especiais no campo unidade
+        function aplicarMascaraUnidade(valor) {
+            return valor
+                .replace(/[^a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÊÍÏÓÔÕÖÚÇÑ\s]/g, '') // Remove tudo que não é letra, acentos ou espaço
+                .replace(/\s+/g, ' ') // Remove espaços múltiplos
+                .toLowerCase(); // Converte para minúsculas
+        }
+        
+        // Função para detectar se é CPF ou CNPJ e aplicar máscara correspondente
+        function aplicarMascaraCpfCnpj(input) {
+            let valor = input.value.replace(/\D/g, ''); // Remove formatação
+            
+            // Limitar o número máximo de dígitos (14 para CNPJ)
+            if (valor.length > 14) {
+                valor = valor.substring(0, 14);
+            }
+            
+            if (valor.length <= 11) {
+                // Aplicar máscara de CPF (máximo 11 dígitos)
+                if (valor.length > 11) {
+                    valor = valor.substring(0, 11);
+                }
+                input.value = aplicarMascaraCPF(valor);
+                input.setAttribute('data-tipo', 'cpf');
+            } else {
+                // Aplicar máscara de CNPJ (máximo 14 dígitos)
+                input.value = aplicarMascaraCNPJ(valor);
+                input.setAttribute('data-tipo', 'cnpj');
+            }
+        }
+        
+        // Função para configurar todas as máscaras
+        function configurarMascaras() {
+            console.log('🎭 Configurando máscaras para os campos...');
+            
+            // Máscara para CPF/CNPJ
+            const campoCpfCnpj = document.getElementById('clienteCpfCnpj');
+            if (campoCpfCnpj) {
+                campoCpfCnpj.addEventListener('input', function(e) {
+                    aplicarMascaraCpfCnpj(e.target);
+                    
+                    // Adicionar dica visual baseada no tipo detectado
+                    const tipo = e.target.getAttribute('data-tipo');
+                    const container = e.target.parentElement;
+                    let dica = container.querySelector('.format-hint');
+                    
+                    if (!dica) {
+                        dica = document.createElement('div');
+                        dica.className = 'format-hint mt-1';
+                        container.appendChild(dica);
+                    }
+                    
+                    if (tipo === 'cpf') {
+                        dica.innerHTML = '<span class="badge bg-primary">CPF</span> 000.000.000-00';
+                    } else if (tipo === 'cnpj') {
+                        dica.innerHTML = '<span class="badge bg-success">CNPJ</span> 00.000.000/0000-00';
+                    } else {
+                        dica.innerHTML = 'Digite CPF (11 dígitos) ou CNPJ (14 dígitos)';
+                    }
+                });
+                
+                // Aplicar classe para fonte monospaced
+                campoCpfCnpj.classList.add('campo-mascara');
+                campoCpfCnpj.placeholder = 'Digite o CPF ou CNPJ';
+                campoCpfCnpj.maxLength = 18; // Tamanho máximo com formatação (00.000.000/0000-00)
+            }
+            
+            // Máscara para celular
+            const campoCelular = document.getElementById('clienteCelular');
+            if (campoCelular) {
+                campoCelular.addEventListener('input', function(e) {
+                    e.target.value = aplicarMascaraCelular(e.target.value);
+                    
+                    // Adicionar dica visual
+                    const container = e.target.parentElement;
+                    let dica = container.querySelector('.format-hint');
+                    
+                    if (!dica) {
+                        dica = document.createElement('div');
+                        dica.className = 'format-hint mt-1';
+                        dica.innerHTML = '<span class="badge bg-info">Celular</span> (00) 00000-0000';
+                        container.appendChild(dica);
+                    }
+                });
+                
+                // Aplicar classe para fonte monospaced
+                campoCelular.classList.add('campo-mascara');
+                campoCelular.placeholder = 'Digite o celular';
+                campoCelular.maxLength = 15; // Limitar tamanho máximo
+            }
+            
+            // Máscara para unidade (apenas letras)
+            const campoUnidade = document.getElementById('unidade');
+            if (campoUnidade) {
+                campoUnidade.addEventListener('input', function(e) {
+                    e.target.value = aplicarMascaraUnidade(e.target.value);
+                    
+                    // Adicionar dica visual
+                    const container = e.target.parentElement;
+                    let dica = container.querySelector('.format-hint');
+                    
+                    if (!dica) {
+                        dica = document.createElement('div');
+                        dica.className = 'format-hint mt-1';
+                        dica.innerHTML = '<span class="badge bg-warning">Unidade</span> Apenas letras (ex: kg, un, caixa)';
+                        container.appendChild(dica);
+                    }
+                });
+                
+                campoUnidade.placeholder = 'Ex: kg, un, caixa, sc (apenas letras)';
+                campoUnidade.maxLength = 20; // Limitar tamanho máximo
+            }
+            
+            console.log('✅ Máscaras configuradas com sucesso');
+        }
+        
+        // Função para obter valor limpo (sem máscara) do CPF/CNPJ
+        function obterCpfCnpjLimpo() {
+            const campo = document.getElementById('clienteCpfCnpj');
+            return campo ? campo.value.replace(/\D/g, '') : '';
+        }
+        
+        // Função para obter valor limpo (sem máscara) do celular
+        function obterCelularLimpo() {
+            const campo = document.getElementById('clienteCelular');
+            return campo ? campo.value.replace(/\D/g, '') : '';
+        }
+        
+        // Funcionalidades de Clientes no Pedido
+        let clientesCadastrados = [];
+
+        // Inicializar ao carregar a página
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Página carregada - Iniciando configurações...');
+            
+            // Configurar data atual
+            document.getElementById('dataCadastro').value = new Date().toISOString().split('T')[0];
+            
+            // Configurar eventos dos radio buttons
+            document.getElementById('clienteNovo').addEventListener('change', alternarTipoCliente);
+            document.getElementById('clienteExistente').addEventListener('change', alternarTipoCliente);
+            
+            // Configurar máscaras dos campos
+            configurarMascaras();
+            
+            // Aguardar um pouco para garantir que todos os scripts carregaram
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Sobrescrever funções do pedido.js para evitar conflitos
+            if (typeof window.finalizarPedido !== 'undefined') {
+                window.finalizarPedido = finalizarPedidoCustomizado;
+                console.log('✅ Função finalizarPedido sobrescrita para evitar duplicação');
+            } else {
+                // Se ainda não existe, definir diretamente
+                window.finalizarPedido = finalizarPedidoCustomizado;
+                console.log('✅ Função finalizarPedido definida');
+            }
+            
+            // Sobrescrever outras funções importantes
+            window.adicionarItem = adicionarItem;
+            window.removerItem = removerItem;
+            window.limparFormularioCompleto = limparFormularioCompleto;
+            console.log('✅ Funções personalizadas definidas globalmente');
+            
+            // Carregar clientes cadastrados
+            console.log('📞 Chamando carregarClientesCadastrados()...');
+            carregarClientesCadastrados();
+        });
+
+        // Alternar entre cliente novo e existente
+        function alternarTipoCliente() {
+            const clienteNovo = document.getElementById('clienteNovo').checked;
+            const selectorExistente = document.getElementById('selectorClienteExistente');
+            const formDados = document.getElementById('formDadosCliente');
+
+            if (clienteNovo) {
+                // Cliente novo selecionado
+                selectorExistente.style.display = 'none';
+                formDados.style.display = 'block';
+                habilitarCamposCliente(true);
+                limparCamposCliente();
+                
+                // Ativar required nos campos obrigatórios
+                gerenciarAtributosRequired(true);
+                
+                console.log('✅ Cliente novo selecionado');
+            } else {
+                // Cliente existente selecionado - apenas mostrar seletor
+                selectorExistente.style.display = 'block';
+                formDados.style.display = 'none';
+                
+                // Desativar required para evitar erro de validação HTML5
+                gerenciarAtributosRequired(false);
+                
+                console.log('✅ Cliente existente selecionado');
+            }
+        }
+
+        // Habilitar/desabilitar campos do cliente
+        function habilitarCamposCliente(habilitar) {
+            const campos = [
+                'clienteNome', 'clienteCpfCnpj', 'clienteCelular', 
+                'clienteEndereco', 'selectEstado', 'selectCidade',
+                'clienteInscricaoEstadual', 'clienteEmail'
+            ];
+            
+            campos.forEach(id => {
+                const campo = document.getElementById(id);
+                if (campo) {
+                    campo.disabled = !habilitar;
+                    if (!habilitar) {
+                        campo.style.backgroundColor = '#f8f9fa';
+                    } else {
+                        campo.style.backgroundColor = '';
+                    }
+                }
+            });
+        }
+
+        // Limpar campos do cliente
+        function limparCamposCliente() {
+            document.getElementById('clienteNome').value = '';
+            
+            // Limpar CPF/CNPJ e remover atributo de tipo e dica
+            const campoCpfCnpj = document.getElementById('clienteCpfCnpj');
+            campoCpfCnpj.value = '';
+            campoCpfCnpj.removeAttribute('data-tipo');
+            const dicaCpf = campoCpfCnpj.parentElement.querySelector('.format-hint');
+            if (dicaCpf) dicaCpf.remove();
+            
+            // Limpar celular e remover dica
+            const campoCelular = document.getElementById('clienteCelular');
+            campoCelular.value = '';
+            const dicaCelular = campoCelular.parentElement.querySelector('.format-hint');
+            if (dicaCelular) dicaCelular.remove();
+            
+            document.getElementById('clienteEndereco').value = '';
+            document.getElementById('selectEstado').value = '';
+            document.getElementById('selectCidade').innerHTML = '<option value="">Primeiro selecione o estado</option>';
+            document.getElementById('selectCidade').disabled = true;
+            document.getElementById('clienteInscricaoEstadual').value = '';
+            document.getElementById('clienteEmail').value = '';
+        }
+
+        // Função para gerenciar atributos required
+        function gerenciarAtributosRequired(ativar = true) {
+            const camposRequired = [
+                'clienteNome', 'clienteCpfCnpj', 'clienteCelular', 'clienteEndereco'
+            ];
+            
+            camposRequired.forEach(id => {
+                const campo = document.getElementById(id);
+                if (campo) {
+                    if (ativar) {
+                        campo.required = true;
+                        campo.setAttribute('required', 'required');
+                    } else {
+                        campo.required = false;
+                        campo.removeAttribute('required');
+                    }
+                }
+            });
+            
+            console.log(`✅ Atributos required ${ativar ? 'ativados' : 'desativados'}`);
+        }
+
+        // Carregar clientes cadastrados do banco
+        async function carregarClientesCadastrados() {
+            const selectCliente = document.getElementById('selectCliente');
+            console.log('🔄 Iniciando carregamento de clientes...');
+            
+            try {
+                selectCliente.innerHTML = '<option value="">Carregando clientes...</option>';
+                
+                // Aguardar um pouco para garantir que os scripts carregaram
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                let config;
+                
+                // Tentar diferentes formas de obter a configuração
+                if (typeof SUPABASE_CONFIG !== 'undefined') {
+                    config = {
+                        supabaseUrl: SUPABASE_CONFIG.url,
+                        supabaseAnonKey: SUPABASE_CONFIG.key
+                    };
+                    console.log('🔧 Configuração obtida via SUPABASE_CONFIG');
+                } else if (typeof getEnvironmentConfig === 'function') {
+                    config = getEnvironmentConfig();
+                    console.log('🔧 Configuração obtida via getEnvironmentConfig');
+                } else if (typeof window.getEnvironmentConfig === 'function') {
+                    config = window.getEnvironmentConfig();
+                    console.log('🔧 Configuração obtida via window.getEnvironmentConfig');
+                } else if (window.SUPABASE_CONFIG) {
+                    config = {
+                        supabaseUrl: window.SUPABASE_CONFIG.url,
+                        supabaseAnonKey: window.SUPABASE_CONFIG.key
+                    };
+                    console.log('🔧 Configuração obtida via window.SUPABASE_CONFIG');
+                } else {
+                    // Fallback: tentar configuração direta (apenas para desenvolvimento)
+                    console.warn('⚠️ Usando configuração de fallback');
+                    config = {
+                        supabaseUrl: 'https://nkgcmqzaiawfiaortazz.supabase.co',
+                        supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rZ2NtcXphaWF3Zmlhb3J0YXp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzNjk1MjgsImV4cCI6MjA2ODk0NTUyOH0.32Y_007CqXXmhdhdQdQFGbt274G2RSRsADERS8_bJ5g'
+                    };
+                }
+                
+                if (!config || !config.supabaseUrl || !config.supabaseAnonKey) {
+                    console.error('❌ Configuração inválida:', config);
+                    selectCliente.innerHTML = '<option value="">Erro: Configuração inválida</option>';
+                    return;
+                }
+                
+                console.log('🔧 Configuração obtida:', { 
+                    hasUrl: !!config.supabaseUrl, 
+                    hasKey: !!config.supabaseAnonKey 
+                });
+                
+                // Verificar se o Supabase está disponível
+                if (typeof supabase === 'undefined') {
+                    console.error('❌ Supabase não está disponível');
+                    selectCliente.innerHTML = '<option value="">Erro: Supabase não carregado</option>';
+                    return;
+                }
+                
+                const supabaseClientLocal = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+                
+                console.log('📡 Buscando clientes no banco...');
+                const { data: clientes, error } = await supabaseClientLocal
+                    .from('clientes')
+                    .select('*')
+                    .eq('status', 'ativo')
+                    .order('nome', { ascending: true });
+                
+                if (error) {
+                    console.error('❌ Erro ao carregar clientes:', error);
+                    selectCliente.innerHTML = '<option value="">Erro ao carregar clientes</option>';
+                    return;
+                }
+                
+                console.log('📊 Dados recebidos:', clientes);
+                clientesCadastrados = clientes || [];
+                
+                // Preencher select
+                selectCliente.innerHTML = '<option value="">Selecione um cliente</option>';
+                
+                if (clientesCadastrados.length === 0) {
+                    selectCliente.innerHTML += '<option value="" disabled>Nenhum cliente encontrado</option>';
+                    console.log('⚠️ Nenhum cliente ativo encontrado');
+                } else {
+                    clientesCadastrados.forEach(cliente => {
+                        const nomeDisplay = cliente.nome || 'Nome não informado';
+                        const cpfDisplay = cliente.cpf_cnpj || 'CPF/CNPJ não informado';
+                        
+                        selectCliente.innerHTML += `
+                            <option value="${cliente.id}">
+                                ${nomeDisplay} - ${cpfDisplay}
+                            </option>
+                        `;
+                    });
+                }
+                
+                console.log(`✅ ${clientesCadastrados.length} clientes carregados com sucesso`);
+                
+            } catch (error) {
+                console.error('❌ Erro geral ao carregar clientes:', error);
+                selectCliente.innerHTML = '<option value="">Erro ao carregar clientes</option>';
+            }
+        }
+
+        // Preencher dados do cliente selecionado
+        function preencherDadosCliente() {
+            const selectCliente = document.getElementById('selectCliente');
+            const clienteId = selectCliente.value;
+            
+            console.log('🔍 Cliente selecionado - ID:', clienteId);
+            
+            if (!clienteId) {
+                console.log('❌ Nenhum cliente selecionado');
+                return;
+            }
+            
+            const cliente = clientesCadastrados.find(c => c.id == clienteId);
+            if (!cliente) {
+                console.error('❌ Cliente não encontrado na lista carregada');
+                console.log('📋 Clientes disponíveis:', clientesCadastrados.map(c => ({ id: c.id, nome: c.nome })));
+                return;
+            }
+            
+            console.log('✅ Cliente selecionado:', {
+                id: cliente.id,
+                nome: cliente.nome,
+                cpf_cnpj: cliente.cpf_cnpj
+            });
+            
+            // Não preenche mais o formulário - apenas mantém a referência para usar no pedido
+        }
+
+        // Obter dados do cliente atual (para usar no pedido)
+        function obterDadosCliente() {
+            const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked').value;
+            console.log('📋 Obtendo dados do cliente - Tipo:', tipoCliente);
+
+            const dadosCliente = {
+                _tipo: tipoCliente // Usar underscore para não conflitar com o banco
+            };
+
+            if (tipoCliente === 'novo') {
+                // Dados do cliente novo - usando valores limpos para CPF/CNPJ e celular
+                dadosCliente.nome = document.getElementById('clienteNome').value.trim();
+                dadosCliente.cpf_cnpj = obterCpfCnpjLimpo(); // Valor sem máscara
+                dadosCliente.celular = obterCelularLimpo(); // Valor sem máscara
+                dadosCliente.endereco = document.getElementById('clienteEndereco').value.trim();
+                dadosCliente.estado = document.getElementById('selectEstado').value || '';
+                dadosCliente.cidade = document.getElementById('selectCidade').value || 'Não informado';
+                dadosCliente.inscricao_estadual = document.getElementById('clienteInscricaoEstadual').value.trim() || null;
+                dadosCliente.email = document.getElementById('clienteEmail').value.trim() || null;
+                
+                console.log('👤 Dados do cliente novo (valores limpos):', dadosCliente);
+            } else if (tipoCliente === 'existente') {
+                // Apenas o ID do cliente existente
+                const clienteId = document.getElementById('selectCliente').value;
+                dadosCliente.id = clienteId;
+                
+                // Buscar dados completos do cliente na lista carregada
+                const clienteSelecionado = clientesCadastrados.find(c => c.id == clienteId);
+                if (clienteSelecionado) {
+                    dadosCliente.nome = clienteSelecionado.nome;
+                    dadosCliente.cpf_cnpj = clienteSelecionado.cpf_cnpj;
+                    dadosCliente.celular = clienteSelecionado.celular;
+                    dadosCliente.endereco = clienteSelecionado.endereco;
+                    dadosCliente.estado = clienteSelecionado.estado;
+                    dadosCliente.cidade = clienteSelecionado.cidade;
+                    dadosCliente.inscricao_estadual = clienteSelecionado.inscricao_estadual;
+                    dadosCliente.email = clienteSelecionado.email;
+                }
+                
+                console.log('🔗 Dados do cliente existente:', dadosCliente);
+            }
+
+            return dadosCliente;
+        }
+
+        // Função para validar campos obrigatórios (sobrescreve a do pedido.js)
+        function validarCamposObrigatorios() {
+            const tipoCliente = document.querySelector('input[name="tipoCliente"]:checked').value;
+            console.log('🔍 Validando campos - Tipo cliente:', tipoCliente);
+            
+            if (tipoCliente === 'novo') {
+                // Validar campos do formulário para cliente novo usando valores limpos
+                const nome = document.getElementById('clienteNome').value.trim();
+                const cpfCnpjLimpo = obterCpfCnpjLimpo();
+                const celularLimpo = obterCelularLimpo();
+                const endereco = document.getElementById('clienteEndereco').value.trim();
+
+                if (!nome) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Campo obrigatório',
+                        text: 'Por favor, preencha o nome do cliente.',
+                        confirmButtonColor: '#4a7c59'
+                    });
+                    document.getElementById('clienteNome').focus();
+                    return false;
+                }
+
+                if (!cpfCnpjLimpo || cpfCnpjLimpo.length < 11) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Campo obrigatório',
+                        text: 'Por favor, preencha um CPF (11 dígitos) ou CNPJ (14 dígitos) válido.',
+                        confirmButtonColor: '#4a7c59'
+                    });
+                    document.getElementById('clienteCpfCnpj').focus();
+                    return false;
+                }
+
+                if (!celularLimpo || celularLimpo.length < 10) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Campo obrigatório',
+                        text: 'Por favor, preencha um celular válido (mínimo 10 dígitos).',
+                        confirmButtonColor: '#4a7c59'
+                    });
+                    document.getElementById('clienteCelular').focus();
+                    return false;
+                }
+
+                if (!endereco) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Campo obrigatório',
+                        text: 'Por favor, preencha o endereço do cliente.',
+                        confirmButtonColor: '#4a7c59'
+                    });
+                    document.getElementById('clienteEndereco').focus();
+                    return false;
+                }
+                
+                console.log('✅ Validação cliente novo: OK');
+                
+            } else if (tipoCliente === 'existente') {
+                // Validar se um cliente foi selecionado
+                const clienteId = document.getElementById('selectCliente').value;
+                
+                if (!clienteId) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Campo obrigatório',
+                        text: 'Por favor, selecione um cliente cadastrado.',
+                        confirmButtonColor: '#4a7c59'
+                    });
+                    document.getElementById('selectCliente').focus();
+                    return false;
+                }
+                
+                console.log('✅ Validação cliente existente: OK - ID:', clienteId);
+            }
+            
+            return true;
+        }
+
+        // Função para finalizar pedido (substitui a do pedido.js)
+        async function finalizarPedidoCustomizado() {
+            const btnFinalizar = document.querySelector('button[type="submit"]');
+            const textoOriginal = btnFinalizar.innerHTML;
+            
+            console.log('🚀 Iniciando finalização do pedido (versão customizada)...');
+            
+            // Mostrar loading
+            btnFinalizar.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Finalizando...';
+            btnFinalizar.disabled = true;
+
+            try {
+                const usuario = await window.AuthManager.obterUsuarioAtual();
+                console.log('👤 Usuário atual:', usuario);
+                
+                // Usar nossa função obterDadosCliente()
+                const dadosCliente = obterDadosCliente();
+                console.log('📋 Dados do cliente obtidos:', dadosCliente);
+
+                let clienteId;
+                if (dadosCliente._tipo === 'novo') {
+                    // Para cliente novo, verificar se já existe ou criar novo
+                    if (dadosCliente.cpf_cnpj) {
+                        const clienteExistente = await buscarClientePorCpf(dadosCliente.cpf_cnpj);
+                        
+                        if (clienteExistente.success && clienteExistente.data) {
+                            clienteId = clienteExistente.data.id;
+                            console.log('🔍 Cliente já existe no banco - ID:', clienteId);
+                        } else {
+                            // Preparar dados do cliente removendo campos que não existem na tabela
+                            const dadosClienteParaBanco = {
+                                nome: dadosCliente.nome,
+                                cpf_cnpj: dadosCliente.cpf_cnpj,
+                                celular: dadosCliente.celular,
+                                endereco: dadosCliente.endereco,
+                                estado: dadosCliente.estado,
+                                cidade: dadosCliente.cidade || 'Não informado',
+                                inscricao_estadual: dadosCliente.inscricao_estadual,
+                                email: dadosCliente.email
+                            };
+                            
+                            console.log('💾 Dados para salvar no banco:', dadosClienteParaBanco);
+                            
+                            const novoCliente = await criarCliente(dadosClienteParaBanco);
+                            if (!novoCliente.success) {
+                                throw new Error('Erro ao salvar cliente: ' + novoCliente.error);
+                            }
+                            clienteId = novoCliente.data.id;
+                            console.log('➕ Novo cliente criado - ID:', clienteId);
+                        }
+                    } else {
+                        throw new Error('CPF/CNPJ é obrigatório');
+                    }
+                } else if (dadosCliente._tipo === 'existente') {
+                    // Para cliente existente, usar o ID diretamente
+                    clienteId = dadosCliente.id;
+                    console.log('🔗 Usando cliente existente - ID:', clienteId);
+                    
+                    if (!clienteId) {
+                        throw new Error('ID do cliente não encontrado');
+                    }
+                }
+
+                const totalGeral = itensCarrinho.reduce((acc, item) => acc + item.total, 0);
+                console.log('💰 Total geral do pedido:', totalGeral);
+                
+                // Salvar cada item do carrinho como um pedido
+                for (const item of itensCarrinho) {
+                    // Validar valores numéricos para evitar overflow
+                    const quantidade = parseFloat(item.quantidade) || 0;
+                    const valorUnitario = parseFloat(item.valorUnitario) || 0;
+                    const total = parseFloat(item.total) || 0;
+                    
+                    // Verificar limites para evitar overflow do banco
+                    if (quantidade > 999999.99) {
+                        throw new Error(`Quantidade muito alta para o item "${item.discriminacao}": ${quantidade}. Máximo permitido: 999.999,99`);
+                    }
+                    
+                    if (valorUnitario > 999999.99) {
+                        throw new Error(`Valor unitário muito alto para o item "${item.discriminacao}": R$ ${valorUnitario.toFixed(2)}. Máximo permitido: R$ 999.999,99`);
+                    }
+                    
+                    if (total > 9999999.99) {
+                        throw new Error(`Total muito alto para o item "${item.discriminacao}": R$ ${total.toFixed(2)}. Máximo permitido: R$ 9.999.999,99`);
+                    }
+                    
+                    // Limitar precisão decimal (máximo 2 casas)
+                    const quantidadeLimitada = Math.round(quantidade * 100) / 100;
+                    const valorUnitarioLimitado = Math.round(valorUnitario * 100) / 100;
+                    const totalLimitado = Math.round(total * 100) / 100;
+                    
+                    const dadosPedido = {
+                        cliente_id: clienteId,
+                        vendedor_id: usuario.id,
+                        vendedor: usuario.nome,
+                        discriminacao: item.discriminacao.substring(0, 255), // Limitar texto também
+                        quantidade: quantidadeLimitada,
+                        unidade: item.unidade.substring(0, 50), // Limitar unidade
+                        valor_unitario: valorUnitarioLimitado,
+                        total: totalLimitado,
+                        data_pedido: new Date().toISOString()
+                    };
+
+                    console.log('💾 Salvando item do pedido (valores validados):', dadosPedido);
+
+                    const novoPedido = await criarPedido(dadosPedido);
+                    if (!novoPedido.success) {
+                        throw new Error('Erro ao salvar item: ' + novoPedido.error);
+                    }
+                }
+
+                console.log('✅ Pedido cadastrado com sucesso!');
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Pedido cadastrado com sucesso!',
+                    html: `
+                        <p><strong>${itensCarrinho.length}</strong> itens foram salvos</p>
+                        <p>Total: <strong>R$ ${totalGeral.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></p>
+                        <p>Cliente: <strong>${dadosCliente.nome}</strong></p>
+                    `,
+                    confirmButtonColor: '#4a7c59',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ver Relatórios',
+                    cancelButtonText: 'Novo Pedido',
+                    cancelButtonColor: '#6c757d'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '/pages/relatorio.html';
+                    } else {
+                        // Chamar função de limpeza se existir
+                        if (typeof limparFormularioCompleto === 'function') {
+                            limparFormularioCompleto();
+                        } else {
+                            location.reload();
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error('❌ Erro ao finalizar pedido:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: 'Ocorreu um erro ao finalizar o pedido: ' + error.message,
+                    confirmButtonColor: '#dc3545'
+                });
+            } finally {
+                btnFinalizar.innerHTML = textoOriginal;
+                btnFinalizar.disabled = false;
+            }
+        }
+
+        // Função de debug para testar o processo de finalização
+        window.testarFinalizacao = function() {
+            console.log('🧪 Testando processo de finalização...');
+            
+            // Verificar se há itens no carrinho
+            if (typeof itensCarrinho !== 'undefined') {
+                console.log('📦 Itens no carrinho:', itensCarrinho.length, itensCarrinho);
+                
+                // Analisar cada item para possíveis problemas de overflow
+                itensCarrinho.forEach((item, index) => {
+                    console.log(`📋 Item ${index + 1}:`, {
+                        discriminacao: item.discriminacao,
+                        discriminacaoLength: item.discriminacao.length,
+                        quantidade: item.quantidade,
+                        quantidadeType: typeof item.quantidade,
+                        unidade: item.unidade,
+                        unidadeLength: item.unidade.length,
+                        valorUnitario: item.valorUnitario,
+                        valorUnitarioType: typeof item.valorUnitario,
+                        total: item.total,
+                        totalType: typeof item.total,
+                        possiveisProblemas: {
+                            quantidadeMuitoAlta: item.quantidade > 999999.99,
+                            valorMuitoAlto: item.valorUnitario > 999999.99,
+                            totalMuitoAlto: item.total > 9999999.99,
+                            discriminacaoMuitoLonga: item.discriminacao.length > 255,
+                            unidadeMuitoLonga: item.unidade.length > 50
+                        }
+                    });
+                });
+            } else {
+                console.error('❌ Variable itensCarrinho não encontrada');
+            }
+            
+            // Verificar dados do cliente
+            const dadosCliente = obterDadosCliente();
+            console.log('👤 Dados do cliente:', dadosCliente);
+            
+            // Verificar validação
+            const validacao = validarCamposObrigatorios();
+            console.log('✅ Validação passou:', validacao);
+            
+            // Verificar se funções necessárias existem
+            const funcoes = ['buscarClientePorCpf', 'criarCliente', 'criarPedido', 'window.AuthManager.obterUsuarioAtual'];
+            funcoes.forEach(nomeFuncao => {
+                try {
+                    const funcao = eval(nomeFuncao);
+                    console.log(`✅ ${nomeFuncao}:`, typeof funcao);
+                } catch (e) {
+                    console.error(`❌ ${nomeFuncao}:`, 'não encontrada');
+                }
+            });
+        };
+        
+        // Função de teste para as máscaras
+        window.testarMascaras = function() {
+            console.log('🎭 Testando máscaras...');
+            
+            const campoCpf = document.getElementById('clienteCpfCnpj');
+            const campoCelular = document.getElementById('clienteCelular');
+            const campoUnidade = document.getElementById('unidade');
+            
+            console.log('🧪 Testando CPF...');
+            campoCpf.value = '12345678901';
+            campoCpf.dispatchEvent(new Event('input'));
+            console.log('CPF formatado:', campoCpf.value);
+            console.log('CPF limpo:', obterCpfCnpjLimpo());
+            
+            setTimeout(() => {
+                console.log('🧪 Testando CNPJ...');
+                campoCpf.value = '12345678000195';
+                campoCpf.dispatchEvent(new Event('input'));
+                console.log('CNPJ formatado:', campoCpf.value);
+                console.log('CNPJ limpo:', obterCpfCnpjLimpo());
+                
+                setTimeout(() => {
+                    console.log('🧪 Testando Celular...');
+                    campoCelular.value = '11987654321';
+                    campoCelular.dispatchEvent(new Event('input'));
+                    console.log('Celular formatado:', campoCelular.value);
+                    console.log('Celular limpo:', obterCelularLimpo());
+                    
+                    setTimeout(() => {
+                        console.log('🧪 Testando Unidade...');
+                        campoUnidade.value = 'kg123@#$test';
+                        campoUnidade.dispatchEvent(new Event('input'));
+                        console.log('Unidade formatada:', campoUnidade.value, '(deve ser apenas: kgtest)');
+                    }, 1000);
+                }, 1000);
+            }, 1000);
+        };
+        
+        // Função para remover item do carrinho (sobrescreve a do pedido.js)
+        function removerItem(index, event) {
+            console.log('🗑️ Removendo item do índice:', index);
+            
+            // Prevenir qualquer propagação ou submit do form
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                event.stopImmediatePropagation();
+            }
+            
+            // Verificar se o índice é válido
+            if (index < 0 || index >= itensCarrinho.length) {
+                console.error('❌ Índice inválido:', index, 'Carrinho tem', itensCarrinho.length, 'itens');
+                return false;
+            }
+            
+            const item = itensCarrinho[index];
+            console.log('📦 Item a ser removido:', item);
+            
+            Swal.fire({
+                title: 'Confirmar remoção',
+                html: `
+                    <p>Deseja realmente remover este item?</p>
+                    <div class="text-start mt-3">
+                        <strong>Item:</strong> ${item.discriminacao}<br>
+                        <strong>Quantidade:</strong> ${item.quantidade} ${item.unidade}<br>
+                        <strong>Total:</strong> R$ ${item.total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </div>
+                `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sim, remover',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    console.log('✅ Usuário confirmou remoção do item');
+                    
+                    // Remover item do carrinho (apenas do array, NÃO do banco)
+                    itensCarrinho.splice(index, 1);
+                    console.log('📋 Item removido do carrinho. Carrinho agora tem', itensCarrinho.length, 'itens');
+                    
+                    // Atualizar tabela de itens
+                    if (typeof atualizarTabelaItens === 'function') {
+                        atualizarTabelaItens();
+                        console.log('🔄 Tabela de itens atualizada');
+                    } else {
+                        console.error('❌ Função atualizarTabelaItens não encontrada');
+                    }
+                    
+                    // Mostrar notificação simples de sucesso
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Item removido!',
+                        text: 'Item removido do pedido.',
+                        timer: 2000,
+                        showConfirmButton: false,
+                        toast: true,
+                        position: 'top-end'
+                    });
+                } else {
+                    console.log('❌ Usuário cancelou a remoção');
+                }
+            }).catch(error => {
+                console.error('❌ Erro ao mostrar confirmação de remoção:', error);
+            });
+            
+            return false; // Garantir que não propague
+        }
+        
+        // Tornar a função global para que possa ser chamada pelos botões
+        window.removerItem = removerItem;
+        
+        // Função para adicionar item ao carrinho (sobrescreve a do pedido.js)
+        function adicionarItem(event) {
+            console.log('➕ Adicionando item ao carrinho...');
+            
+            // Prevenir submit do form
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            
+            // Verificar se as funções do pedido.js estão disponíveis
+            if (typeof window.calcularTotalItem === 'function') {
+                // Forçar recálculo antes de adicionar
+                const totalCalculado = window.calcularTotalItem();
+                console.log('💰 Total calculado:', totalCalculado);
+            }
+            
+            // Obter valores dos campos
+            const discriminacao = document.getElementById('discriminacao').value.trim();
+            const quantidadeRaw = document.getElementById('quantidade').value.trim();
+            const unidade = document.getElementById('unidade').value.trim();
+            const valorUnitarioRaw = document.getElementById('valorUnitario').value.trim();
+            
+            // Converter valores usando a função do pedido.js se disponível
+            let quantidade, valorUnitario;
+            if (typeof window.converterValorBrasileiroParaNumero === 'function') {
+                quantidade = window.converterValorBrasileiroParaNumero(quantidadeRaw);
+                valorUnitario = window.converterValorBrasileiroParaNumero(valorUnitarioRaw);
+            } else {
+                // Fallback simples
+                quantidade = parseFloat(quantidadeRaw.replace(',', '.')) || 0;
+                valorUnitario = parseFloat(valorUnitarioRaw.replace(',', '.')) || 0;
+            }
+            
+            const total = quantidade * valorUnitario;
+            
+            console.log('📊 Dados do item:', { 
+                discriminacao, 
+                quantidade, 
+                unidade, 
+                valorUnitario, 
+                total 
+            });
+
+            // Validações
+            if (!discriminacao) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Campo obrigatório',
+                    text: 'Por favor, preencha a discriminação do item.',
+                    confirmButtonColor: '#4a7c59'
+                });
+                document.getElementById('discriminacao').focus();
+                return false;
+            }
+
+            if (quantidade <= 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Quantidade inválida',
+                    text: 'A quantidade deve ser maior que zero.',
+                    confirmButtonColor: '#4a7c59'
+                });
+                document.getElementById('quantidade').focus();
+                return false;
+            }
+            
+            // Validar limite máximo da quantidade
+            if (quantidade > 999999.99) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Quantidade muito alta',
+                    text: 'A quantidade máxima permitida é 999.999,99.',
+                    confirmButtonColor: '#4a7c59'
+                });
+                document.getElementById('quantidade').focus();
+                return false;
+            }
+
+            if (valorUnitario <= 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Valor inválido',
+                    text: 'O valor unitário deve ser maior que zero.',
+                    confirmButtonColor: '#4a7c59'
+                });
+                document.getElementById('valorUnitario').focus();
+                return false;
+            }
+            
+            // Validar limite máximo do valor unitário
+            if (valorUnitario > 999999.99) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Valor muito alto',
+                    text: 'O valor unitário máximo permitido é R$ 999.999,99.',
+                    confirmButtonColor: '#4a7c59'
+                });
+                document.getElementById('valorUnitario').focus();
+                return false;
+            }
+            
+            // Validar limite máximo do total
+            if (total > 9999999.99) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Total muito alto',
+                    text: 'O total máximo permitido é R$ 9.999.999,99. Reduza a quantidade ou valor unitário.',
+                    confirmButtonColor: '#4a7c59'
+                });
+                return false;
+            }
+            
+            // Validar comprimento da discriminação
+            if (discriminacao.length > 255) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Descrição muito longa',
+                    text: 'A discriminação deve ter no máximo 255 caracteres.',
+                    confirmButtonColor: '#4a7c59'
+                });
+                document.getElementById('discriminacao').focus();
+                return false;
+            }
+            
+            // Validar comprimento da unidade
+            if (unidade.length > 50) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Unidade muito longa',
+                    text: 'A unidade deve ter no máximo 50 caracteres.',
+                    confirmButtonColor: '#4a7c59'
+                });
+                document.getElementById('unidade').focus();
+                return false;
+            }
+
+            const item = {
+                id: Date.now(),
+                discriminacao: discriminacao.substring(0, 255), // Limitar tamanho
+                quantidade: Math.round(quantidade * 100) / 100, // Limitar a 2 casas decimais
+                unidade: unidade.substring(0, 50), // Limitar tamanho
+                valorUnitario: Math.round(valorUnitario * 100) / 100, // Limitar a 2 casas decimais
+                total: Math.round(total * 100) / 100 // Limitar a 2 casas decimais
+            };
+
+            // Adicionar item ao carrinho (apenas no array, NÃO salva no banco)
+            if (typeof itensCarrinho !== 'undefined') {
+                itensCarrinho.push(item);
+                console.log('✅ Item adicionado ao carrinho. Total de itens:', itensCarrinho.length);
+                console.log('🛒 Carrinho atual:', itensCarrinho);
+            } else {
+                console.error('❌ Array itensCarrinho não encontrado');
+                return false;
+            }
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Item adicionado!',
+                text: 'Item adicionado ao carrinho. Será salvo quando finalizar o pedido.',
+                timer: 1500,
+                showConfirmButton: false,
+                toast: true,
+                position: 'top-end'
+            });
+
+            // Atualizar tabela
+            if (typeof atualizarTabelaItens === 'function') {
+                atualizarTabelaItens();
+            }
+            
+            // Limpar formulário de item
+            if (typeof limparFormularioItem === 'function') {
+                limparFormularioItem();
+            } else {
+                // Fallback simples
+                document.getElementById('discriminacao').value = '';
+                document.getElementById('quantidade').value = '';
+                document.getElementById('unidade').value = '';
+                document.getElementById('valorUnitario').value = '';
+                document.getElementById('totalItem').value = '';
+            }
+            
+            return false;
+        }
+        
+        // Tornar a função global
+        window.adicionarItem = adicionarItem;
+        
+        // Função para limpar formulário completo (sobrescreve a do pedido.js)
+        function limparFormularioCompleto() {
+            console.log('🧹 Limpando formulário completo...');
+            
+            // Limpar campos do cliente novo
+            limparCamposCliente();
+            
+            // Limpar seleção de cliente existente
+            const selectCliente = document.getElementById('selectCliente');
+            if (selectCliente) {
+                selectCliente.value = '';
+            }
+            
+            // Resetar para cliente novo por padrão
+            const clienteNovo = document.getElementById('clienteNovo');
+            if (clienteNovo) {
+                clienteNovo.checked = true;
+                alternarTipoCliente();
+            }
+            
+            // Limpar formulário de item usando a função existente
+            if (typeof limparFormularioItem === 'function') {
+                limparFormularioItem();
+                console.log('🧽 Formulário de item limpo');
+            }
+            
+            // Limpar carrinho de itens
+            if (typeof itensCarrinho !== 'undefined') {
+                itensCarrinho.length = 0; // Limpar array mantendo a referência
+                console.log('🛒 Carrinho limpo');
+                
+                // Atualizar tabela de itens
+                if (typeof atualizarTabelaItens === 'function') {
+                    atualizarTabelaItens();
+                    console.log('🔄 Tabela de itens atualizada');
+                }
+            }
+            
+            console.log('✅ Formulário completamente limpo');
+        }
+        
+        // Tornar a função global
+        window.limparFormularioCompleto = limparFormularioCompleto;
+
+        // Dados de fallback caso a API esteja indisponível
+        const cidadesPorEstado = {
+            'SP': ['São Paulo', 'Campinas', 'Santos', 'Ribeirão Preto', 'Sorocaba', 'São José dos Campos', 'Guarulhos', 'Osasco', 'Santo André', 'São Bernardo do Campo'],
+            'RJ': ['Rio de Janeiro', 'Niterói', 'Nova Iguaçu', 'Duque de Caxias', 'São Gonçalo', 'Campos dos Goytacazes', 'Petrópolis', 'Volta Redonda', 'Belford Roxo', 'São João de Meriti'],
+            'MG': ['Belo Horizonte', 'Uberlândia', 'Contagem', 'Juiz de Fora', 'Betim', 'Montes Claros', 'Ribeirão das Neves', 'Uberaba', 'Governador Valadares', 'Ipatinga'],
+            'RS': ['Porto Alegre', 'Caxias do Sul', 'Pelotas', 'Canoas', 'Santa Maria', 'Gravataí', 'Viamão', 'Novo Hamburgo', 'São Leopoldo', 'Rio Grande'],
+            'PR': ['Curitiba', 'Londrina', 'Maringá', 'Ponta Grossa', 'Cascavel', 'São José dos Pinhais', 'Foz do Iguaçu', 'Colombo', 'Guarapuava', 'Paranaguá'],
+            'SC': ['Florianópolis', 'Joinville', 'Blumenau', 'São José', 'Criciúma', 'Chapecó', 'Itajaí', 'Lages', 'Jaraguá do Sul', 'Palhoça'],
+            'BA': ['Salvador', 'Feira de Santana', 'Vitória da Conquista', 'Camaçari', 'Itabuna', 'Juazeiro', 'Lauro de Freitas', 'Ilhéus', 'Jequié', 'Teixeira de Freitas'],
+            'GO': ['Goiânia', 'Aparecida de Goiânia', 'Anápolis', 'Rio Verde', 'Luziânia', 'Águas Lindas de Goiás', 'Valparaíso de Goiás', 'Trindade', 'Formosa', 'Novo Gama'],
+            'PE': ['Recife', 'Jaboatão dos Guararapes', 'Olinda', 'Caruaru', 'Petrolina', 'Paulista', 'Cabo de Santo Agostinho', 'Camaragibe', 'Garanhuns', 'Vitória de Santo Antão'],
+            'CE': ['Fortaleza', 'Caucaia', 'Juazeiro do Norte', 'Maracanaú', 'Sobral', 'Crato', 'Itapipoca', 'Maranguape', 'Iguatu', 'Quixadá']
+        };
+
+        // Função para carregar cidades baseada no estado selecionado
+        async function carregarCidades() {
+            const selectEstado = document.getElementById('selectEstado');
+            const selectCidade = document.getElementById('selectCidade');
+            
+            const estadoSelecionado = selectEstado.value;
+            console.log('🏙️ Carregando cidades para o estado:', estadoSelecionado);
+            
+            // Sempre limpar a seleção de cidade ao mudar o estado
+            selectCidade.value = '';
+            
+            if (!estadoSelecionado) {
+                selectCidade.disabled = true;
+                selectCidade.innerHTML = '<option value="">Primeiro selecione o estado</option>';
+                window.cidadesDisponiveis = null; // Limpar cache
+                return;
+            }
+            
+            // Mostrar loading
+            selectCidade.disabled = true;
+            selectCidade.innerHTML = '<option value="">Carregando cidades...</option>';
+            
+            try {
+                // Tentar usar API do IBGE primeiro
+                const response = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estadoSelecionado}/municipios`, {
+                    timeout: 5000 // Timeout de 5 segundos
+                });
+                
+                if (!response.ok) {
+                    throw new Error('API indisponível');
+                }
+                
+                const cidades = await response.json();
+                console.log(`📍 ${cidades.length} cidades encontradas via API para ${estadoSelecionado}`);
+                
+                // Guardar lista de cidades para filtro
+                window.cidadesDisponiveis = cidades.sort((a, b) => a.nome.localeCompare(b.nome));
+                
+                // Limpar e popular o select de cidades
+                preencherSelectCidades(window.cidadesDisponiveis);
+                
+            } catch (error) {
+                console.warn('⚠️ API indisponível, usando dados locais:', error);
+                
+                // Usar dados de fallback
+                if (cidadesPorEstado[estadoSelecionado]) {
+                    const cidadesLocal = cidadesPorEstado[estadoSelecionado]
+                        .sort()
+                        .map(nome => ({ nome }));
+                    
+                    window.cidadesDisponiveis = cidadesLocal;
+                    preencherSelectCidades(cidadesLocal);
+                    
+                    console.log(`📍 ${cidadesLocal.length} cidades carregadas localmente para ${estadoSelecionado}`);
+                } else {
+                    // Estado não tem dados de fallback
+                    selectCidade.innerHTML = '<option value="">Digite a cidade manualmente</option>';
+                    window.cidadesDisponiveis = null;
+                    console.log('⚠️ Estado sem dados de fallback - permitindo digitação manual');
+                }
+            }
+            
+            // Sempre habilitar o select no final
+            selectCidade.disabled = false;
+            console.log('✅ Carregamento de cidades concluído');
+        }
+
+        // Função auxiliar para preencher o select de cidades
+        function preencherSelectCidades(cidades) {
+            const selectCidade = document.getElementById('selectCidade');
+            
+            // Limpar select
+            selectCidade.innerHTML = '<option value="">Selecione a cidade</option>';
+            
+            // Se há muitas cidades, mostrar dica de digitação
+            if (cidades.length > 50) {
+                selectCidade.innerHTML += '<option value="" disabled>💡 Digite para filtrar as cidades</option>';
+            }
+            
+            // Adicionar opções de cidade
+            cidades.forEach(cidade => {
+                const option = document.createElement('option');
+                option.value = cidade.nome;
+                option.textContent = cidade.nome;
+                selectCidade.appendChild(option);
+            });
+        }
+
+        // Função para filtrar cidades enquanto digita (funcionalidade extra)
+        function filtrarCidades(termo) {
+            if (!window.cidadesDisponiveis || !termo) {
+                if (window.cidadesDisponiveis) {
+                    preencherSelectCidades(window.cidadesDisponiveis);
+                }
+                return;
+            }
+            
+            const cidadesFiltradas = window.cidadesDisponiveis.filter(cidade => 
+                cidade.nome.toLowerCase().includes(termo.toLowerCase())
+            );
+            
+            preencherSelectCidades(cidadesFiltradas);
+        }
+
+        // Funcionalidades de Perfil do Usuário
+        
+        // Abrir modal de perfil
+        async function abrirModalPerfil() {
+            let usuario;
+            
+            // Tentar obter usuário usando AuthManager primeiro
+            try {
+                if (window.AuthManager && typeof window.AuthManager.verificarAutenticacao === 'function') {
+                    usuario = await window.AuthManager.verificarAutenticacao();
+                } else {
+                    usuario = obterUsuarioLogado();
+                }
+            } catch (error) {
+                console.error('Erro ao obter usuário:', error);
+                usuario = obterUsuarioLogado();
+            }
+            
+            if (!usuario) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: 'Não foi possível carregar os dados do usuário.',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+            
+            console.log('🔍 Dados do usuário para modal perfil:', usuario);
+            
+            // Preencher dados atuais
+            document.getElementById('perfilNome').value = usuario.nome || '';
+            document.getElementById('perfilEmail').value = usuario.email || '';
+            document.getElementById('perfilUsuario').value = usuario.usuario || '';
+            
+            // Configurar tipo de usuário
+            const tipoUsuarioSelect = document.getElementById('tipoUsuario');
+            const tipoUsuarioHint = document.getElementById('tipoUsuarioHint');
+            tipoUsuarioSelect.value = usuario.prioridade || 'VENDEDOR';
+            
+            // Verificar se usuário é admin para permitir alteração do tipo
+            if (usuario.prioridade !== 'ADM') {
+                tipoUsuarioSelect.disabled = true;
+                tipoUsuarioSelect.style.backgroundColor = '#f8f9fa';
+                tipoUsuarioSelect.style.color = '#6c757d';
+                tipoUsuarioSelect.style.cursor = 'not-allowed';
+                tipoUsuarioHint.textContent = 'Apenas administradores podem alterar o tipo de conta';
+                tipoUsuarioHint.className = 'form-text text-warning';
+            } else {
+                tipoUsuarioSelect.disabled = false;
+                tipoUsuarioSelect.style.backgroundColor = '';
+                tipoUsuarioSelect.style.color = '';
+                tipoUsuarioSelect.style.cursor = '';
+                tipoUsuarioHint.textContent = 'Você pode alterar o tipo de conta';
+                tipoUsuarioHint.className = 'form-text text-success';
+            }
+            
+            // Remover classes de validação
+            document.querySelectorAll('#formPerfil .is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            
+            new bootstrap.Modal(document.getElementById('modalPerfil')).show();
+        }
+        
+        // Salvar alterações do perfil
+        async function salvarPerfil() {
+            let usuario;
+            
+            // Tentar obter usuário usando AuthManager primeiro
+            try {
+                if (window.AuthManager && typeof window.AuthManager.verificarAutenticacao === 'function') {
+                    usuario = await window.AuthManager.verificarAutenticacao();
+                } else {
+                    usuario = obterUsuarioLogado();
+                }
+            } catch (error) {
+                console.error('Erro ao obter usuário:', error);
+                usuario = obterUsuarioLogado();
+            }
+            
+            if (!usuario) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: 'Não foi possível identificar o usuário.',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+            
+            console.log('🔍 Dados do usuário para salvar perfil:', usuario);
+            
+            // Validar formulário
+            const nome = document.getElementById('perfilNome').value.trim();
+            const email = document.getElementById('perfilEmail').value.trim();
+            const tipoUsuario = document.getElementById('tipoUsuario').value;
+            
+            let valido = true;
+            
+            // Validar nome
+            if (nome.length < 2) {
+                document.getElementById('perfilNome').classList.add('is-invalid');
+                valido = false;
+            } else {
+                document.getElementById('perfilNome').classList.remove('is-invalid');
+            }
+            
+            // Validar email
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                document.getElementById('perfilEmail').classList.add('is-invalid');
+                valido = false;
+            } else {
+                document.getElementById('perfilEmail').classList.remove('is-invalid');
+            }
+            
+            if (!valido) return;
+            
+            try {
+                // Preparar dados para atualização
+                const dadosAtualizacao = {
+                    nome: nome,
+                    email: email
+                };
+                
+                // Se for admin, pode alterar o tipo
+                if (usuario.prioridade === 'ADM') {
+                    dadosAtualizacao.prioridade = tipoUsuario;
+                }
+                
+                // Identificar o nome de usuário correto
+                const nomeUsuario = usuario.usuario; // AuthManager já formata nome_usuario como usuario
+                
+                if (!nomeUsuario) {
+                    throw new Error('Nome de usuário não encontrado');
+                }
+                
+                // Atualizar no banco de dados
+                let resultado = { success: false };
+                
+                if (typeof atualizarPerfilUsuario === 'function') {
+                    resultado = await atualizarPerfilUsuario(nomeUsuario, dadosAtualizacao);
+                } else {
+                    console.warn('Função atualizarPerfilUsuario não encontrada');
+                    // Simular sucesso para desenvolvimento
+                    resultado = { success: true };
+                }
+                
+                if (resultado.success) {
+                    // Atualizar display do nome
+                    const nomeUsuarioElement = document.getElementById('nomeUsuario');
+                    if (nomeUsuarioElement) {
+                        nomeUsuarioElement.innerHTML = 
+                            `<i class="bi bi-person-circle"></i> ${nome}`;
+                    }
+                    
+                    // Fechar modal
+                    bootstrap.Modal.getInstance(document.getElementById('modalPerfil')).hide();
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Perfil Atualizado!',
+                        text: 'Suas informações foram atualizadas com sucesso.',
+                        confirmButtonColor: '#4a7c59'
+                    }).then(() => {
+                        // Recarregar a página para atualizar todos os dados
+                        window.location.reload();
+                    });
+                } else {
+                    throw new Error(resultado.error || 'Falha ao atualizar no banco');
+                }
+                
+            } catch (error) {
+                console.error('Erro ao salvar perfil:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: `Ocorreu um erro ao salvar suas alterações: ${error.message}`,
+                    confirmButtonColor: '#dc3545'
+                });
+            }
+        }
+        
+        // Abrir modal de alterar senha
+        function abrirModalAlterarSenha() {
+            // Limpar formulário
+            document.getElementById('formAlterarSenha').reset();
+            document.querySelectorAll('#formAlterarSenha .is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            
+            new bootstrap.Modal(document.getElementById('modalAlterarSenha')).show();
+        }
+        
+        // Alterar senha
+        async function alterarSenha() {
+            let usuario;
+            
+            // Tentar obter usuário usando AuthManager primeiro
+            try {
+                if (window.AuthManager && typeof window.AuthManager.verificarAutenticacao === 'function') {
+                    usuario = await window.AuthManager.verificarAutenticacao();
+                } else {
+                    usuario = obterUsuarioLogado();
+                }
+            } catch (error) {
+                console.error('Erro ao obter usuário:', error);
+                usuario = obterUsuarioLogado();
+            }
+            
+            if (!usuario) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: 'Não foi possível identificar o usuário.',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+            
+            const senhaAtual = document.getElementById('senhaAtual').value;
+            const novaSenha = document.getElementById('novaSenha').value;
+            const confirmarSenha = document.getElementById('confirmarSenha').value;
+            
+            let valido = true;
+            
+            // Validar senha atual
+            if (senhaAtual !== usuario.senha) {
+                document.getElementById('senhaAtual').classList.add('is-invalid');
+                valido = false;
+            } else {
+                document.getElementById('senhaAtual').classList.remove('is-invalid');
+            }
+            
+            // Validar nova senha
+            if (novaSenha.length < 4) {
+                document.getElementById('novaSenha').classList.add('is-invalid');
+                valido = false;
+            } else {
+                document.getElementById('novaSenha').classList.remove('is-invalid');
+            }
+            
+            // Validar confirmação
+            if (novaSenha !== confirmarSenha) {
+                document.getElementById('confirmarSenha').classList.add('is-invalid');
+                valido = false;
+            } else {
+                document.getElementById('confirmarSenha').classList.remove('is-invalid');
+            }
+            
+            if (!valido) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Dados inválidos',
+                    text: 'Verifique os campos e tente novamente.',
+                    confirmButtonColor: '#4a7c59'
+                });
+                return;
+            }
+            
+            try {
+                // Identificar o nome de usuário correto
+                const nomeUsuario = usuario.usuario; // AuthManager já formata nome_usuario como usuario
+                
+                if (!nomeUsuario) {
+                    throw new Error('Nome de usuário não encontrado');
+                }
+                
+                // Alterar senha no banco de dados
+                let resultado = { success: false };
+                
+                if (typeof alterarSenhaUsuario === 'function') {
+                    resultado = await alterarSenhaUsuario(nomeUsuario, novaSenha);
+                } else {
+                    console.warn('Função alterarSenhaUsuario não encontrada');
+                    // Simular sucesso para desenvolvimento
+                    resultado = { success: true };
+                }
+                
+                if (resultado.success) {
+                    // Limpar formulário
+                    document.getElementById('formAlterarSenha').reset();
+                    
+                    // Fechar modal
+                    bootstrap.Modal.getInstance(document.getElementById('modalAlterarSenha')).hide();
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Senha Alterada!',
+                        text: 'Sua senha foi alterada com sucesso.',
+                        confirmButtonColor: '#4a7c59'
+                    }).then(() => {
+                        // Recarregar a página para atualizar todos os dados
+                        window.location.reload();
+                    });
+                } else {
+                    throw new Error(resultado.error || 'Falha ao alterar senha no banco');
+                }
+                
+            } catch (error) {
+                console.error('Erro ao alterar senha:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: `Ocorreu um erro ao alterar sua senha: ${error.message}`,
+                    confirmButtonColor: '#dc3545'
+                });
+            }
+        }
+        
+        // Fazer as funções globalmente acessíveis
+        window.abrirModalPerfil = abrirModalPerfil;
+        window.salvarPerfil = salvarPerfil;
+        window.abrirModalAlterarSenha = abrirModalAlterarSenha;
+        window.alterarSenha = alterarSenha;
+    </script>
+</body>
+</html>

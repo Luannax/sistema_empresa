@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOMA | CONTROLE DE USUÁRIOS</title>
+    <link rel="icon" type="image/png" href="../img/icon.jpg">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="../css/navbar.css" rel="stylesheet">
+    <style>
+        .search-container {
+            background: linear-gradient(135deg, #4a7c59, #6b8e6b);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        .user-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .user-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .status-badge {
+            font-size: 0.8rem;
+        }
+        .admin-badge {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        }
+        .user-badge {
+            background: linear-gradient(135deg, #4a7c59, #6b8e6b);
+        }
+        .vendas-stats {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        }
+        .vendas-stats .card {
+            border: none;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .month-details-table {
+            font-size: 0.9rem;
+        }
+        .month-details-table th {
+            background-color: #4a7c59 !important;
+            color: white !important;
+            font-weight: 600;
+        }
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar será carregado automaticamente -->
+    <div id="navbar-container" data-component="navbar"></div>
+
+    <!-- Breadcrumb -->
+    <div class="bg-light border-bottom">
+        <div class="container-fluid">
+            <nav aria-label="breadcrumb" class="py-2">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item">
+                        <a href="/pages/dashboard.html" class="text-decoration-none">
+                            <i class="bi bi-house-door me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        <i class="bi bi-people me-1"></i>Controle de Usuários
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="search-container">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2 class="mb-3">
+                        <i class="bi bi-people me-2"></i>Controle de Usuários
+                    </h2>
+                    <p class="mb-0">Cadastre, edite e gerencie todos os usuários do sistema</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button class="btn btn-light btn-sm" onclick="abrirModalNovoUsuario()">
+                        <i class="bi bi-person-plus me-2"></i>Novo Usuário
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="container mt-4">
+        <!-- Filtros -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <input type="text" class="form-control" id="filtroNome" placeholder="Buscar por nome..." onkeyup="filtrarUsuarios()">
+            </div>
+            <div class="col-md-3 d-none d-sm-inline">
+                <select class="form-select" id="filtroTipo" onchange="filtrarUsuarios()">
+                    <option value="">Todos os tipos</option>
+                    <option value="ADM">Administrador</option>
+                    <option value="VENDEDOR">Vendedor</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-none d-sm-inline">
+                <select class="form-select" id="filtroStatus" onchange="filtrarUsuarios()">
+                    <option value="">Todos os status</option>
+                    <option value="ativo">Ativo</option>
+                    <option value="inativo">Inativo</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-none d-sm-inline">
+                <button class="btn btn-outline-secondary w-100" onclick="limparFiltros()">
+                    <i class="bi bi-x-circle me-1"></i>Limpar
+                </button>
+            </div>
+        </div>
+
+        <!-- Lista de Usuários -->
+        <div class="row" id="listaUsuarios">
+            <!-- Usuários carregados via JavaScript -->
+        </div>
+
+        <!-- Paginação -->
+        <div class="row mt-4">
+            <div class="col-12 d-flex justify-content-center">
+                <nav>
+                    <ul class="pagination" id="paginacao">
+                        <!-- Paginação carregada via JavaScript -->
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Novo/Editar Usuário -->
+    <div class="modal fade" id="modalUsuario" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #4a7c59, #6b8e6b);">
+                    <h5 class="modal-title text-white" id="tituloModal"></h5>
+
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formUsuario" novalidate>
+                        <input type="hidden" id="usuarioId">
+                        
+                        <div class="mb-3">
+                            <label for="nomeCompleto" class="form-label">Nome Completo</label>
+                            <input type="text" class="form-control" id="nomeCompleto" required placeholder="Digite seu nome completo">
+                            <div class="invalid-feedback">Por favor, insira o nome completo.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="nomeUsuario" class="form-label">Nome de Usuário <small class="text-muted">(para login)</small></label>
+                            <input type="text" class="form-control" id="nomeUsuario" required placeholder="ex: joao, maria, admin">
+                            <div class="invalid-feedback">Por favor, insira o nome de usuário para login.</div>
+                            <small class="form-text text-muted">Este será o nome usado para fazer login no sistema.</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">E-mail</label>
+                            <input type="email" class="form-control" id="email" required placeholder="user@gmail.com">
+                            <div class="invalid-feedback">Por favor, insira um e-mail válido.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="senha" class="form-label">Senha</label>
+                            <input type="password" class="form-control" id="senha" required placeholder="Digite uma senha">
+                            <div class="invalid-feedback">A senha deve ter pelo menos 6 caracteres.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="tipoUsuario" class="form-label">Tipo de Usuário</label>
+                            <select class="form-select" id="tipoUsuario" required>
+                                <option value="">Selecione o tipo</option>
+                                <option value="ADM">Administrador</option>
+                                <option value="VENDEDOR">Vendedor</option>
+                            </select>
+                            <div class="invalid-feedback">Por favor, selecione o tipo de usuário.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="statusUsuario" class="form-label">Status</label>
+                            <select class="form-select" id="statusUsuario" required>
+                                <option value="ativo">Ativo</option>
+                                <option value="inativo">Inativo</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn text-white" style="background: linear-gradient(135deg, #4a7c59, #6b8e6b);" onclick="salvarUsuario()">
+                        <i class="bi bi-check-circle me-1"></i>Salvar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Scripts do projeto -->
+    <script src="../js/environment-config.js"></script>
+    <script src="../js/devtools-protection.js"></script>
+    <script src="../js/security.js"></script>
+    <script src="../js/auth-manager.js"></script>
+    <script src="../js/controle-acesso.js"></script>
+    <script src="../js/database.js"></script>
+    <script src="../js/component-loader.js"></script>
+    <script src="../js/usuarios.js"></script>
+    
+    <script>
+        // Inicializar página após carregar componentes
+        document.addEventListener('componentesCarregados', function() {
+            carregarUsuarios();
+        });
+    </script>
+
+    <!-- Modais de Perfil -->
+    <!-- Modal Editar Perfil -->
+    <div class="modal fade" id="modalPerfil" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #4a7c59, #6b8e6b);">
+                    <h5 class="modal-title text-white">
+                        <i class="bi bi-person me-2"></i>Meu Perfil
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formPerfil" novalidate>
+                        <div class="text-center mb-4">
+                            <div class="bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center" 
+                                 style="width: 80px; height: 80px;">
+                                <i class="bi bi-person-fill" style="font-size: 2rem; color: #4a7c59;"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="perfilNome" class="form-label">Nome Completo</label>
+                            <input type="text" class="form-control" id="perfilNome" required>
+                            <div class="invalid-feedback">Por favor, insira seu nome completo.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="perfilEmail" class="form-label">E-mail</label>
+                            <input type="email" class="form-control" id="perfilEmail" required>
+                            <div class="invalid-feedback">Por favor, insira um e-mail válido.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="perfilUsuario" class="form-label">Nome de Usuário</label>
+                            <input type="text" class="form-control" id="perfilUsuario" readonly>
+                            <small class="form-text text-muted">O nome de usuário não pode ser alterado.</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Tipo de Conta</label>
+                            <input type="text" class="form-control" id="perfilTipo" readonly>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn text-white" style="background: linear-gradient(135deg, #4a7c59, #6b8e6b);" onclick="salvarPerfil()">
+                        <i class="bi bi-check-circle me-1"></i>Salvar Alterações
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Alterar Senha -->
+    <div class="modal fade" id="modalAlterarSenha" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #4a7c59, #6b8e6b);">
+                    <h5 class="modal-title text-white">
+                        <i class="bi bi-key me-2"></i>Alterar Senha
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formAlterarSenha" novalidate>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Dica de Segurança:</strong> Use uma senha forte com pelo menos 4 caracteres.
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="senhaAtual" class="form-label">Senha Atual</label>
+                            <input type="password" class="form-control" id="senhaAtual" required>
+                            <div class="invalid-feedback">Por favor, insira sua senha atual.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="novaSenha" class="form-label">Nova Senha</label>
+                            <input type="password" class="form-control" id="novaSenha" required>
+                            <div class="invalid-feedback">A nova senha deve ter pelo menos 4 caracteres.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="confirmarSenha" class="form-label">Confirmar Nova Senha</label>
+                            <input type="password" class="form-control" id="confirmarSenha" required>
+                            <div class="invalid-feedback">As senhas não coincidem.</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn text-white" style="background: linear-gradient(135deg, #4a7c59, #6b8e6b);" onclick="alterarSenha()">
+                        <i class="bi bi-check-circle me-1"></i>Alterar Senha
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Funcionalidades de Perfil do Usuário
+        
+        // Abrir modal de perfil
+        async function abrirModalPerfil() {
+            let usuario;
+            
+            // Tentar obter usuário usando AuthManager primeiro
+            try {
+                if (window.AuthManager && typeof window.AuthManager.verificarAutenticacao === 'function') {
+                    usuario = await window.AuthManager.verificarAutenticacao();
+                } else {
+                    usuario = obterUsuarioLogado();
+                }
+            } catch (error) {
+                console.error('Erro ao obter usuário:', error);
+                usuario = obterUsuarioLogado();
+            }
+            
+            if (!usuario) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: 'Não foi possível carregar os dados do usuário.',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+            
+            console.log('🔍 Dados do usuário para modal perfil:', usuario);
+            
+            // Preencher dados atuais
+            document.getElementById('perfilNome').value = usuario.nome || '';
+            document.getElementById('perfilEmail').value = usuario.email || '';
+            document.getElementById('perfilUsuario').value = usuario.usuario || '';
+            document.getElementById('perfilTipo').value = usuario.prioridade === 'ADM' ? 'Administrador' : 'Vendedor';
+            
+            // Remover classes de validação
+            document.querySelectorAll('#formPerfil .is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            
+            new bootstrap.Modal(document.getElementById('modalPerfil')).show();
+        }
+        
+        // Salvar alterações do perfil
+        async function salvarPerfil() {
+            let usuario;
+            
+            // Tentar obter usuário usando AuthManager primeiro
+            try {
+                if (window.AuthManager && typeof window.AuthManager.verificarAutenticacao === 'function') {
+                    usuario = await window.AuthManager.verificarAutenticacao();
+                } else {
+                    usuario = obterUsuarioLogado();
+                }
+            } catch (error) {
+                console.error('Erro ao obter usuário:', error);
+                usuario = obterUsuarioLogado();
+            }
+            
+            if (!usuario) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: 'Não foi possível identificar o usuário.',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+            
+            console.log('🔍 Dados do usuário para salvar perfil:', usuario);
+            
+            // Validar formulário
+            const nome = document.getElementById('perfilNome').value.trim();
+            const email = document.getElementById('perfilEmail').value.trim();
+            
+            let valido = true;
+            
+            // Validar nome
+            if (nome.length < 2) {
+                document.getElementById('perfilNome').classList.add('is-invalid');
+                valido = false;
+            } else {
+                document.getElementById('perfilNome').classList.remove('is-invalid');
+            }
+            
+            // Validar email
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                document.getElementById('perfilEmail').classList.add('is-invalid');
+                valido = false;
+            } else {
+                document.getElementById('perfilEmail').classList.remove('is-invalid');
+            }
+            
+            if (!valido) return;
+            
+            try {
+                // Preparar dados para atualização (apenas nome e email)
+                const dadosAtualizacao = {
+                    nome: nome,
+                    email: email
+                };
+                
+                // Identificar o nome de usuário correto
+                const nomeUsuario = usuario.nome_usuario || usuario.usuario;
+                
+                if (!nomeUsuario) {
+                    throw new Error('Nome de usuário não encontrado');
+                }
+                
+                console.log('📤 Enviando atualização:', { nomeUsuario, dadosAtualizacao });
+                
+                // Atualizar no banco de dados
+                let resultado = { success: false };
+                
+                try {
+                    if (typeof atualizarPerfilUsuario === 'function') {
+                        resultado = await atualizarPerfilUsuario(nomeUsuario, dadosAtualizacao);
+                        console.log('📥 Resultado da atualização:', resultado);
+                    } else {
+                        throw new Error('Função atualizarPerfilUsuario não encontrada');
+                    }
+                } catch (dbError) {
+                    console.error('❌ Erro do banco de dados:', dbError);
+                    
+                    // Se for erro de constraint, verificar se é problema de email duplicado
+                    if (dbError.message && dbError.message.includes('constraint')) {
+                        if (dbError.message.includes('email')) {
+                            throw new Error('Este e-mail já está sendo usado por outro usuário');
+                        } else if (dbError.message.includes('nome_usuario')) {
+                            throw new Error('Este nome de usuário já está sendo usado');
+                        } else {
+                            throw new Error('Dados em conflito com registros existentes');
+                        }
+                    } else {
+                        throw dbError;
+                    }
+                }
+                
+                if (resultado.success) {
+                    // Atualizar display do nome
+                    const nomeUsuarioElement = document.getElementById('nomeUsuario');
+                    if (nomeUsuarioElement) {
+                        nomeUsuarioElement.innerHTML = `<i class="bi bi-person-circle"></i> ${nome}`;
+                    }
+                    
+                    // Fechar modal
+                    bootstrap.Modal.getInstance(document.getElementById('modalPerfil')).hide();
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Perfil Atualizado!',
+                        text: 'Suas informações foram atualizadas com sucesso.',
+                        confirmButtonColor: '#4a7c59',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        // Recarregar a página para atualizar todos os dados
+                        window.location.reload();
+                    });
+                } else {
+                    throw new Error(resultado.error || 'Falha ao atualizar no banco');
+                }
+                
+            } catch (error) {
+                console.error('Erro ao salvar perfil:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: `Ocorreu um erro ao salvar suas alterações: ${error.message}`,
+                    confirmButtonColor: '#dc3545'
+                });
+            }
+        }
+        
+        // Abrir modal de alterar senha
+        function abrirModalAlterarSenha() {
+            // Limpar formulário
+            document.getElementById('formAlterarSenha').reset();
+            document.querySelectorAll('#formAlterarSenha .is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            
+            new bootstrap.Modal(document.getElementById('modalAlterarSenha')).show();
+        }
+        
+        // Alterar senha
+        async function alterarSenha() {
+            let usuario;
+            
+            // Tentar obter usuário usando AuthManager primeiro
+            try {
+                if (window.AuthManager && typeof window.AuthManager.verificarAutenticacao === 'function') {
+                    usuario = await window.AuthManager.verificarAutenticacao();
+                } else {
+                    usuario = obterUsuarioLogado();
+                }
+            } catch (error) {
+                console.error('Erro ao obter usuário:', error);
+                usuario = obterUsuarioLogado();
+            }
+            
+            if (!usuario) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: 'Não foi possível identificar o usuário.',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+            
+            const senhaAtual = document.getElementById('senhaAtual').value;
+            const novaSenha = document.getElementById('novaSenha').value;
+            const confirmarSenha = document.getElementById('confirmarSenha').value;
+            
+            let valido = true;
+            
+            // Validar senha atual
+            if (senhaAtual !== usuario.senha) {
+                document.getElementById('senhaAtual').classList.add('is-invalid');
+                valido = false;
+            } else {
+                document.getElementById('senhaAtual').classList.remove('is-invalid');
+            }
+            
+            // Validar nova senha
+            if (novaSenha.length < 4) {
+                document.getElementById('novaSenha').classList.add('is-invalid');
+                valido = false;
+            } else {
+                document.getElementById('novaSenha').classList.remove('is-invalid');
+            }
+            
+            // Validar confirmação
+            if (novaSenha !== confirmarSenha) {
+                document.getElementById('confirmarSenha').classList.add('is-invalid');
+                valido = false;
+            } else {
+                document.getElementById('confirmarSenha').classList.remove('is-invalid');
+            }
+            
+            if (!valido) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Dados inválidos',
+                    text: 'Verifique os campos e tente novamente.',
+                    confirmButtonColor: '#4a7c59'
+                });
+                return;
+            }
+            
+            try {
+                // Identificar o nome de usuário correto
+                const nomeUsuario = usuario.nome_usuario || usuario.usuario;
+                
+                if (!nomeUsuario) {
+                    throw new Error('Nome de usuário não encontrado');
+                }
+                
+                console.log('🔄 Alterando senha para usuário:', nomeUsuario);
+                
+                // Alterar senha no banco de dados
+                let resultado = { success: false };
+                
+                try {
+                    if (typeof alterarSenhaUsuario === 'function') {
+                        resultado = await alterarSenhaUsuario(nomeUsuario, novaSenha);
+                        console.log('📥 Resultado da alteração de senha:', resultado);
+                    } else {
+                        throw new Error('Função alterarSenhaUsuario não encontrada');
+                    }
+                } catch (dbError) {
+                    console.error('❌ Erro do banco de dados:', dbError);
+                    throw new Error('Erro ao alterar senha no banco de dados: ' + dbError.message);
+                }
+                
+                if (resultado.success) {
+                    // Limpar formulário
+                    document.getElementById('formAlterarSenha').reset();
+                    
+                    // Fechar modal
+                    bootstrap.Modal.getInstance(document.getElementById('modalAlterarSenha')).hide();
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Senha Alterada!',
+                        text: 'Sua senha foi alterada com sucesso.',
+                        confirmButtonColor: '#4a7c59',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        // Recarregar a página para atualizar todos os dados
+                        window.location.reload();
+                    });
+                } else {
+                    throw new Error(resultado.error || 'Falha ao alterar senha no banco');
+                }
+                
+            } catch (error) {
+                console.error('Erro ao alterar senha:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: `Ocorreu um erro ao alterar sua senha: ${error.message}`,
+                    confirmButtonColor: '#dc3545'
+                });
+            }
+        }
+        
+        // Função de debug para testar perfil
+        window.debugPerfil = async function() {
+            console.log('🐛 Testando sistema de perfil...');
+            
+            try {
+                const usuario = await window.AuthManager.verificarAutenticacao();
+                console.log('👤 Usuário atual:', usuario);
+                
+                // Testar se as funções existem
+                console.log('🔧 Funções disponíveis:');
+                console.log('- atualizarPerfilUsuario:', typeof atualizarPerfilUsuario);
+                console.log('- alterarSenhaUsuario:', typeof alterarSenhaUsuario);
+                console.log('- obterTodosUsuarios:', typeof obterTodosUsuarios);
+                
+                // Testar busca de usuários
+                if (typeof obterTodosUsuarios === 'function') {
+                    const usuarios = await obterTodosUsuarios();
+                    console.log('👥 Usuários do banco:', usuarios);
+                }
+                
+            } catch (error) {
+                console.error('❌ Erro no debug:', error);
+            }
+        };
+    </script>
+</body>
+</html>
